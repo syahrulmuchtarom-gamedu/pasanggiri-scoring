@@ -1,5 +1,5 @@
 {
-  "name": "pasanggiri-app",
+  "name": "pasanggiri-clean",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -13,9 +13,7 @@
     "react": "^18",
     "react-dom": "^18",
     "@supabase/supabase-js": "^2.38.4",
-    "@supabase/ssr": "^0.0.10",
-    "bcryptjs": "^2.4.3",
-    "lucide-react": "^0.294.0"
+    "bcryptjs": "^2.4.3"
   },
   "devDependencies": {
     "typescript": "^5",
