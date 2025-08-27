@@ -1,0 +1,15 @@
+import { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: 'Pasanggiri - Sistem Penilaian Pencak Silat',
+    short_name: 'Pasanggiri',
+    description: 'Aplikasi penilaian kompetisi pencak silat',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#dc2626',
+    orientation: 'portrait',
+    icons: []
+  };
+}
