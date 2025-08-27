@@ -35,11 +35,16 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
+    const kelas = searchParams.get('kelas');
 
     let query = supabaseAdmin.from('competitions').select('*');
     
     if (status) {
       query = query.eq('status', status);
+    }
+    
+    if (kelas) {
+      query = query.eq('kelas', kelas);
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });

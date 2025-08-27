@@ -129,6 +129,8 @@ SELECT * FROM results;
 ### Error: "Build Failed"
 - Cek TypeScript errors
 - Pastikan semua dependencies terinstall
+- Pastikan manifest.json ada di folder public/, bukan app/
+- Hapus experimental.appDir dari next.config.js (deprecated di Next.js 14)
 
 ### Performance Issues
 - Enable Vercel Edge Functions
