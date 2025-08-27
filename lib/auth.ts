@@ -40,10 +40,10 @@ export async function authenticateUser(username: string, password: string): Prom
 
     if (error || !data) return null;
 
-    const isValid = await verifyPassword(password, data.password_hash);
-    if (!isValid) return null;
+    // Direct password comparison (no hash)
+    if (data.password !== password) return null;
 
-    const { password_hash, ...user } = data;
+    const { password: _, ...user } = data;
     return user;
   } catch (error) {
     console.error('Error authenticating user:', error);
