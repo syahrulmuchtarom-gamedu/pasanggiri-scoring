@@ -42,7 +42,7 @@ export default function ResultsView({ kelas }: Props) {
         );
 
         const averageScore = competitionScores.length > 0
-          ? competitionScores.reduce((sum: number, score) => sum + score.total_score, 0) / competitionScores.length
+          ? competitionScores.reduce((sum: number, score: Score) => sum + score.total_score, 0) / competitionScores.length
           : 0;
 
         resultsMap.set(competition.id, {
