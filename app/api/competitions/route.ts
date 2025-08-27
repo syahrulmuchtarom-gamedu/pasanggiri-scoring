@@ -1,0 +1,57 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase';
+
+export async function POST(request: NextRequest) {
+  try {
+    const { desa, kelas, golongan, kategori } = await request.json();
+
+    const { data, error } = await supabaseAdmin
+      .from('competitions')
+      .insert([
+        {
+          desa,
+          kelas,
+          golongan,
+          kategori,
+          status: 'ACTIVE'
+        }
+      ])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error creating competition:', error);
+    return NextResponse.json(
+      { error: 'Gagal membuat pertandingan' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status');
+
+    let query = supabaseAdmin.from('competitions').select('*');
+    
+    if (status) {
+      query = query.eq('status', status);
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return NextResponse.json(data);
+  } catch (error) {
+    console.error('Error fetching competitions:', error);
+    return NextResponse.json(
+      { error: 'Gagal mengambil data pertandingan' },
+      { status: 500 }
+    );
+  }
+}
