@@ -1,5 +1,10 @@
 import './globals.css';
-export { metadata } from './metadata';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Pasanggiri - Sistem Penilaian Pencak Silat',
+  description: 'Aplikasi penilaian kompetisi pencak silat Pasanggiri',
+};
 
 export default function RootLayout({
   children,
