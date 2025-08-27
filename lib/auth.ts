@@ -41,9 +41,9 @@ export async function authenticateUser(username: string, password: string): Prom
     if (error || !data) return null;
 
     // Direct password comparison (no hash)
-    if (data.password !== password) return null;
+    if (data.password_hash !== password) return null;
 
-    const { password: _, ...user } = data;
+    const { password_hash, ...user } = data;
     return user;
   } catch (error) {
     console.error('Error authenticating user:', error);
