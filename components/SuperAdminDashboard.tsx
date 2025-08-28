@@ -17,6 +17,12 @@ export default function SuperAdminDashboard({ user }: Props) {
   const [competitions, setCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false);
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [editForm, setEditForm] = useState({
+    username: '',
+    role: '',
+    password: ''
+  });
 
   const [newUser, setNewUser] = useState({
     username: '',
@@ -153,6 +159,89 @@ export default function SuperAdminDashboard({ user }: Props) {
       }
     } catch (error) {
       console.error('Error deleting user:', error);
+    }
+  };
+
+  const startEditUser = (userToEdit: User) => {
+    setEditingUser(userToEdit);
+    setEditForm({
+      username: userToEdit.username,
+      role: userToEdit.role,
+      password: ''
+    });
+  };
+
+  const updateUser = async () => {
+    if (!editingUser || !editForm.username || !editForm.role) return;
+    
+    setLoading(true);
+    try {
+      const updateData: any = {
+        id: editingUser.id,
+        username: editForm.username,
+        role: editForm.role
+      };
+      
+      if (editForm.password) {
+        updateData.password = editForm.password;
+      }
+
+      const response = await fetch('/api/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData),
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUsers(users.map(u => u.id === editingUser.id ? updatedUser : u));
+        setEditingUser(null);
+        setEditForm({ username: '', role: '', password: '' });
+        
+        await fetch('/api/activity-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            username: user.username,
+            action: 'UPDATE_USER',
+            details: `Mengupdate user: ${updatedUser.username} (${updatedUser.role})`
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetUserPassword = async (userId: string, username: string) => {
+    if (!confirm(`Reset password user ${username} ke "password123"?`)) return;
+    
+    try {
+      const response = await fetch('/api/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId, password: 'password123' }),
+      });
+
+      if (response.ok) {
+        await fetch('/api/activity-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            username: user.username,
+            action: 'RESET_PASSWORD',
+            details: `Reset password user: ${username}`
+          }),
+        });
+        
+        alert(`Password user ${username} berhasil direset ke "password123"`);
+      }
+    } catch (error) {
+      console.error('Error resetting password:', error);
     }
   };
 
@@ -459,6 +548,60 @@ export default function SuperAdminDashboard({ user }: Props) {
             </div>
           )}
 
+          {editingUser && (
+            <div className="card">
+              <h3 className="text-lg font-medium mb-4">Edit User: {editingUser.username}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input
+                  type="text"
+                  placeholder="Username"
+                  value={editForm.username}
+                  onChange={(e) => setEditForm({...editForm, username: e.target.value})}
+                  className="border rounded px-3 py-2"
+                />
+                <select
+                  value={editForm.role}
+                  onChange={(e) => setEditForm({...editForm, role: e.target.value})}
+                  className="border rounded px-3 py-2"
+                >
+                  <option value="JURI_PUTRA">JURI PUTRA</option>
+                  <option value="JURI_PUTRI">JURI PUTRI</option>
+                  <option value="SIRKULATOR_PUTRA">SIRKULATOR PUTRA</option>
+                  <option value="SIRKULATOR_PUTRI">SIRKULATOR PUTRI</option>
+                  <option value="KOORDINATOR_PUTRA">KOORDINATOR PUTRA</option>
+                  <option value="KOORDINATOR_PUTRI">KOORDINATOR PUTRI</option>
+                  <option value="ADMIN">ADMIN</option>
+                  <option value="VIEWER">VIEWER</option>
+                </select>
+                <input
+                  type="password"
+                  placeholder="Password Baru (opsional)"
+                  value={editForm.password}
+                  onChange={(e) => setEditForm({...editForm, password: e.target.value})}
+                  className="border rounded px-3 py-2"
+                />
+              </div>
+              <div className="flex space-x-2 mt-4">
+                <button
+                  onClick={updateUser}
+                  disabled={loading}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+                >
+                  Update
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingUser(null);
+                    setEditForm({ username: '', role: '', password: '' });
+                  }}
+                  className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="card">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -485,7 +628,19 @@ export default function SuperAdminDashboard({ user }: Props) {
                       </td>
                       <td className="py-2">{new Date(u.created_at).toLocaleDateString()}</td>
                       <td className="py-2">
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1">
+                          <button
+                            onClick={() => startEditUser(u)}
+                            className="bg-blue-100 text-blue-700 hover:bg-blue-200 text-xs px-2 py-1 rounded"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => resetUserPassword(u.id, u.username)}
+                            className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 text-xs px-2 py-1 rounded"
+                          >
+                            Reset
+                          </button>
                           <button
                             onClick={() => toggleUserStatus(u.id, u.is_active)}
                             className={`text-xs px-2 py-1 rounded ${
@@ -494,13 +649,13 @@ export default function SuperAdminDashboard({ user }: Props) {
                                 : 'bg-green-100 text-green-700 hover:bg-green-200'
                             }`}
                           >
-                            {u.is_active ? 'Nonaktifkan' : 'Aktifkan'}
+                            {u.is_active ? 'Off' : 'On'}
                           </button>
                           <button
                             onClick={() => deleteUser(u.id, u.username)}
                             className="bg-red-100 text-red-700 hover:bg-red-200 text-xs px-2 py-1 rounded"
                           >
-                            Hapus
+                            Del
                           </button>
                         </div>
                       </td>
