@@ -82,12 +82,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-sm text-gray-600">
-          <p className="font-medium">Akun Default:</p>
-          <p>JURI: juri1, juri2, juri3, juri4, juri5</p>
-          <p>SIRKULATOR: sirkulator_putra, sirkulator_putri</p>
-          <p>Password: password123</p>
-        </div>
+
       </div>
     </div>
   );
