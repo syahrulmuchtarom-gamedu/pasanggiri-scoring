@@ -1,4 +1,4 @@
-export type UserRole = 'JURI' | 'SIRKULATOR_PUTRA' | 'SIRKULATOR_PUTRI';
+export type UserRole = 'SUPER_ADMIN' | 'ADMIN' | 'KOORDINATOR_PUTRA' | 'KOORDINATOR_PUTRI' | 'SIRKULATOR_PUTRA' | 'SIRKULATOR_PUTRI' | 'JURI' | 'VIEWER';
 
 export type Golongan = 'USIA DINI' | 'PRA REMAJA' | 'REMAJA' | 'DEWASA' | 'ISTIMEWA';
 export type Kelas = 'PUTRA' | 'PUTRI';
@@ -9,6 +9,17 @@ export interface User {
   id: string;
   username: string;
   role: UserRole;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ActivityLog {
+  id: string;
+  user_id: string;
+  username: string;
+  action: string;
+  details: string;
   created_at: string;
 }
 

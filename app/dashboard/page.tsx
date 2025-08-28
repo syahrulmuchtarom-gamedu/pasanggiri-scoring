@@ -5,6 +5,10 @@ import { useRouter } from 'next/navigation';
 import { User } from '@/types';
 import SirkulatorDashboard from '@/components/SirkulatorDashboard';
 import JuriDashboard from '@/components/JuriDashboard';
+import SuperAdminDashboard from '@/components/SuperAdminDashboard';
+import AdminDashboard from '@/components/AdminDashboard';
+import KoordinatorDashboard from '@/components/KoordinatorDashboard';
+import ViewerDashboard from '@/components/ViewerDashboard';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -66,11 +70,16 @@ export default function DashboardPage() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {user.role === 'JURI' ? (
-          <JuriDashboard user={user} />
-        ) : (
+        {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} />}
+        {user.role === 'ADMIN' && <AdminDashboard user={user} />}
+        {(user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') && (
+          <KoordinatorDashboard user={user} />
+        )}
+        {(user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') && (
           <SirkulatorDashboard user={user} />
         )}
+        {user.role === 'JURI' && <JuriDashboard user={user} />}
+        {user.role === 'VIEWER' && <ViewerDashboard user={user} />}
       </main>
     </div>
   );
