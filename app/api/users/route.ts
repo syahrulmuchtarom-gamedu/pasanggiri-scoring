@@ -32,14 +32,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
     const { data, error } = await supabaseAdmin
       .from('users')
       .insert([
         {
           username,
-          password_hash: hashedPassword,
+          password_hash: password,
           role,
           is_active: true
         }
@@ -75,7 +73,7 @@ export async function PATCH(request: NextRequest) {
     if (username) updateData.username = username;
     if (role) updateData.role = role;
     if (typeof is_active === 'boolean') updateData.is_active = is_active;
-    if (password) updateData.password_hash = await bcrypt.hash(password, 10);
+    if (password) updateData.password_hash = password;
 
     const { data, error } = await supabaseAdmin
       .from('users')

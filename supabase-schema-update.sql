@@ -22,26 +22,26 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON activity_logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_activity_logs_user_id ON activity_logs(user_id);
 
--- Insert super admin user (change password after first login)
+-- Insert super admin user
 INSERT INTO users (username, password_hash, role, is_active) 
-VALUES ('superadmin', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VcSAg/9qm', 'SUPER_ADMIN', true)
+VALUES ('superadmin', 'password123', 'SUPER_ADMIN', true)
 ON CONFLICT (username) DO NOTHING;
 
 -- Insert admin user
 INSERT INTO users (username, password_hash, role, is_active) 
-VALUES ('admin', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VcSAg/9qm', 'ADMIN', true)
+VALUES ('admin', 'password123', 'ADMIN', true)
 ON CONFLICT (username) DO NOTHING;
 
 -- Insert koordinator users
 INSERT INTO users (username, password_hash, role, is_active) 
 VALUES 
-('koordinator_putra', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VcSAg/9qm', 'KOORDINATOR_PUTRA', true),
-('koordinator_putri', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VcSAg/9qm', 'KOORDINATOR_PUTRI', true)
+('koordinator_putra', 'password123', 'KOORDINATOR_PUTRA', true),
+('koordinator_putri', 'password123', 'KOORDINATOR_PUTRI', true)
 ON CONFLICT (username) DO NOTHING;
 
 -- Insert viewer user
 INSERT INTO users (username, password_hash, role, is_active) 
-VALUES ('viewer', '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBPj/VcSAg/9qm', 'VIEWER', true)
+VALUES ('viewer', 'password123', 'VIEWER', true)
 ON CONFLICT (username) DO NOTHING;
 
 -- Update existing users to have is_active = true

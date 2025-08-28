@@ -43,6 +43,9 @@ export async function authenticateUser(username: string, password: string): Prom
     // Direct password comparison (no hash)
     if (data.password_hash !== password) return null;
 
+    // Check if user is active
+    if (data.is_active === false) return null;
+
     const { password_hash, ...user } = data;
     return user;
   } catch (error) {
