@@ -8,13 +8,10 @@ interface Props {
 }
 
 export default function ScoringDetails({ scores, showDetails = false }: Props) {
-  // Debug: log data yang diterima
-  console.log('ScoringDetails received scores:', scores);
-  
   if (scores.length === 0) {
     return (
       <div className="text-gray-500 text-sm">
-        Belum ada penilaian (0 scores)
+        Belum ada penilaian
       </div>
     );
   }

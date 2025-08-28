@@ -35,10 +35,6 @@ export default function ResultsView({ kelas }: Props) {
 
       const competitions = await competitionsRes.json();
       const scores = await scoresRes.json();
-      
-      // Debug: log data yang diambil
-      console.log('ResultsView - Competitions:', competitions);
-      console.log('ResultsView - Scores:', scores);
 
       const resultsMap = new Map<string, CompetitionResult>();
 
@@ -51,8 +47,6 @@ export default function ResultsView({ kelas }: Props) {
           ? calculateFinalScore(competitionScores)
           : 0;
 
-        console.log(`Competition ${competition.desa}-${competition.kategori}: ${competitionScores.length} scores, final: ${finalScore}`);
-        
         resultsMap.set(competition.id, {
           competition,
           scores: competitionScores,
@@ -130,7 +124,6 @@ export default function ResultsView({ kelas }: Props) {
       {Object.keys(groupedResults).length === 0 ? (
         <div className="text-center py-8">
           <p className="text-gray-500">Belum ada hasil pertandingan untuk kelas {kelas}</p>
-          <p className="text-xs text-gray-400 mt-2">Debug: {results.length} competitions loaded</p>
         </div>
       ) : (
         <div className="space-y-8">
