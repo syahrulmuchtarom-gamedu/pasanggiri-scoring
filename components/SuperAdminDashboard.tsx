@@ -139,6 +139,113 @@ export default function SuperAdminDashboard({ user }: Props) {
     }
   };
 
+  const exportData = async (type: string) => {
+    try {
+      let data, filename;
+      
+      switch (type) {
+        case 'users':
+          data = users;
+          filename = 'users-export.json';
+          break;
+        case 'competitions':
+          const compResponse = await fetch('/api/competitions');
+          data = await compResponse.json();
+          filename = 'competitions-export.json';
+          break;
+        case 'scores':
+          const scoresResponse = await fetch('/api/scores');
+          data = await scoresResponse.json();
+          filename = 'scores-export.json';
+          break;
+        case 'logs':
+          data = logs;
+          filename = 'activity-logs-export.json';
+          break;
+        default:
+          return;
+      }
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      await fetch('/api/activity-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          username: user.username,
+          action: 'EXPORT_DATA',
+          details: `Export data: ${type}`
+        }),
+      });
+    } catch (error) {
+      console.error('Error exporting data:', error);
+    }
+  };
+
+  const resetAllPasswords = async () => {
+    if (!confirm('Yakin ingin reset semua password ke "password123"?')) return;
+    
+    try {
+      for (const u of users) {
+        await fetch('/api/users', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: u.id, password: 'password123' }),
+        });
+      }
+      
+      await fetch('/api/activity-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          username: user.username,
+          action: 'RESET_ALL_PASSWORDS',
+          details: 'Reset semua password user ke default'
+        }),
+      });
+      
+      alert('Semua password berhasil direset ke "password123"');
+    } catch (error) {
+      console.error('Error resetting passwords:', error);
+    }
+  };
+
+  const clearLogs = async () => {
+    if (!confirm('Yakin ingin menghapus log aktivitas lama (>30 hari)?')) return;
+    
+    try {
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      
+      // Filter logs yang akan dihapus
+      const logsToDelete = logs.filter(log => new Date(log.created_at) < thirtyDaysAgo);
+      
+      await fetch('/api/activity-logs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id,
+          username: user.username,
+          action: 'CLEAR_OLD_LOGS',
+          details: `Menghapus ${logsToDelete.length} log lama`
+        }),
+      });
+      
+      fetchLogs(); // Refresh logs
+      alert(`${logsToDelete.length} log lama berhasil dihapus`);
+    } catch (error) {
+      console.error('Error clearing logs:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex space-x-4 border-b">
@@ -317,8 +424,77 @@ export default function SuperAdminDashboard({ user }: Props) {
       {activeTab === 'system' && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Sistem</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="card">
+              <h3 className="text-lg font-medium mb-4">Export Data</h3>
+              <div className="space-y-3">
+                <button
+                  onClick={() => exportData('users')}
+                  className="w-full bg-blue-100 text-blue-700 hover:bg-blue-200 px-4 py-2 rounded"
+                >
+                  Export Data User
+                </button>
+                <button
+                  onClick={() => exportData('competitions')}
+                  className="w-full bg-green-100 text-green-700 hover:bg-green-200 px-4 py-2 rounded"
+                >
+                  Export Data Pertandingan
+                </button>
+                <button
+                  onClick={() => exportData('scores')}
+                  className="w-full bg-purple-100 text-purple-700 hover:bg-purple-200 px-4 py-2 rounded"
+                >
+                  Export Data Nilai
+                </button>
+                <button
+                  onClick={() => exportData('logs')}
+                  className="w-full bg-orange-100 text-orange-700 hover:bg-orange-200 px-4 py-2 rounded"
+                >
+                  Export Log Aktivitas
+                </button>
+              </div>
+            </div>
+
+            <div className="card">
+              <h3 className="text-lg font-medium mb-4">Statistik Sistem</h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span>Total User:</span>
+                  <span className="font-medium">{users.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>User Aktif:</span>
+                  <span className="font-medium text-green-600">{users.filter(u => u.is_active).length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Total Log:</span>
+                  <span className="font-medium">{logs.length}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Sistem:</span>
+                  <span className="font-medium text-blue-600">Online</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="card">
-            <p className="text-gray-600">Fitur sistem akan ditambahkan di sini.</p>
+            <h3 className="text-lg font-medium mb-4">Konfigurasi Sistem</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                onClick={() => resetAllPasswords()}
+                className="bg-yellow-100 text-yellow-700 hover:bg-yellow-200 px-4 py-2 rounded"
+              >
+                Reset Semua Password
+              </button>
+              <button
+                onClick={() => clearLogs()}
+                className="bg-red-100 text-red-700 hover:bg-red-200 px-4 py-2 rounded"
+              >
+                Hapus Log Lama
+              </button>
+            </div>
           </div>
         </div>
       )}
