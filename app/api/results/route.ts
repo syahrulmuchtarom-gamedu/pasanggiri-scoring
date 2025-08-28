@@ -55,9 +55,9 @@ export async function GET(request: NextRequest) {
     if (error) throw error;
 
     // Group by desa and calculate totals
-    const desaResults = {};
+    const desaResults: any = {};
     
-    data.forEach(row => {
+    data.forEach((row: any) => {
       const key = `${row.desa}-${row.kelas}-${row.golongan}`;
       if (!desaResults[key]) {
         desaResults[key] = {
@@ -74,7 +74,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Convert to array and sort by total score
-    const results = Object.values(desaResults).sort((a, b) => b.total_score - a.total_score);
+    const results = Object.values(desaResults).sort((a: any, b: any) => b.total_score - a.total_score);
 
     return NextResponse.json(results);
   } catch (error) {
