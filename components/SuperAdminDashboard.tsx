@@ -515,7 +515,6 @@ export default function SuperAdminDashboard({ user }: Props) {
       {activeTab === 'competitions' && (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Kontrol Pertandingan</h2>
-          {console.log('Competitions tab rendered, competitionSubTab:', competitionSubTab)}
           
           {/* Class Tabs */}
           <div className="flex space-x-4 border-b">
