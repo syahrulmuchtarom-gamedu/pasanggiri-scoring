@@ -4,12 +4,14 @@ Aplikasi web untuk kompetisi pencak silat "Pasanggiri" menggunakan Next.js, Supa
 
 ## Fitur Utama
 
-- **User Management**: 5 JURI + 2 SIRKULATOR (PUTRA/PUTRI)
+- **User Management**: 8 Role berbeda dengan akses sesuai fungsi
 - **Sistem Penilaian**: Form dinamis untuk 5 kategori kompetisi
-- **Dashboard**: Interface terpisah untuk JURI dan SIRKULATOR
+- **Dashboard**: Interface terpisah untuk setiap role
 - **Real-time**: Update langsung saat input nilai
 - **Mobile-First**: Responsif untuk smartphone
 - **Validasi**: Range nilai sesuai kriteria setiap kategori
+- **Activity Logging**: Track semua aktivitas user
+- **Master Control**: SuperAdmin dengan kontrol penuh sistem
 
 ## Kategori Kompetisi
 
@@ -43,24 +45,50 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
 npm run dev
 ```
 
-## Akun Default
+## Role & Akun Default
 
-### JURI (5 akun):
-- Username: `juri1`, `juri2`, `juri3`, `juri4`, `juri5`
-- Password: `password123`
+### SUPER_ADMIN (Master Control):
+- Username: `superadmin` | Password: `password123`
+- Fitur: User management, system control, override semua fungsi
 
-### SIRKULATOR (2 akun):
-- Username: `sirkulator_putra`, `sirkulator_putri`
-- Password: `password123`
+### ADMIN (Operational Management):
+- Username: `admin` | Password: `password123`
+- Fitur: Monitor sistem, kelola user operasional
+
+### KOORDINATOR (Class Supervision):
+- Username: `koordinator_putra`, `koordinator_putri` | Password: `password123`
+- Fitur: Supervisi per kelas, override sesi pertandingan
+
+### SIRKULATOR (Competition Management):
+- Username: `sirkulator_putra`, `sirkulator_putri` | Password: `password123`
+- Fitur: Buat/kelola sesi pertandingan per kelas
+
+### JURI (Scoring - Terpisah per Kelas):
+- **PUTRA**: `juri1-5` | Password: `password123`
+- **PUTRI**: `juri_putri1-5` | Password: `password123`
+- Fitur: Penilaian sesuai kelas masing-masing
+
+### VIEWER (Read-Only Access):
+- Username: `viewer` | Password: `password123`
+- Fitur: Lihat hasil pertandingan (read-only)
 
 ## Workflow Sistem
 
-1. **SIRKULATOR** login dan membuat sesi pertandingan
-2. **SIRKULATOR** mengaktifkan form penilaian untuk kategori tertentu
-3. **JURI** login dan melihat pertandingan aktif
-4. **JURI** mengisi form penilaian sesuai kriteria
-5. **JURI** submit nilai ke database
-6. **SIRKULATOR** melihat hasil dan mengelola sesi
+### Operasional Terpisah per Kelas:
+**GELANGGANG PUTRA:**
+1. **SIRKULATOR_PUTRA** buat sesi pertandingan PUTRA
+2. **JURI_PUTRA** (juri1-5) lihat dan nilai sesi PUTRA saja
+3. **KOORDINATOR_PUTRA** supervisi dan override jika perlu
+
+**GELANGGANG PUTRI:**
+1. **SIRKULATOR_PUTRI** buat sesi pertandingan PUTRI
+2. **JURI_PUTRI** (juri_putri1-5) lihat dan nilai sesi PUTRI saja
+3. **KOORDINATOR_PUTRI** supervisi dan override jika perlu
+
+### Master Control:
+- **SUPER_ADMIN**: Kontrol penuh kedua kelas + manajemen sistem
+- **ADMIN**: Monitor operasional + kelola user
+- **VIEWER**: Akses read-only hasil pertandingan
 
 ## Deployment ke Vercel
 
@@ -83,10 +111,11 @@ git push -u origin main
 
 ## Struktur Database
 
-- **users**: Data user dan role
-- **competitions**: Sesi pertandingan aktif
-- **scores**: Nilai dari setiap JURI
-- **results**: Hasil akhir dan ranking
+- **users**: Data user, role, dan status aktif
+- **competitions**: Sesi pertandingan dengan filter per kelas
+- **scores**: Nilai dari juri sesuai kelas masing-masing
+- **results**: Hasil akhir dan ranking per kelas
+- **activity_logs**: Log aktivitas semua user untuk audit
 
 ## Tech Stack
 
@@ -94,15 +123,36 @@ git push -u origin main
 - **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS
 - **Deployment**: Vercel
-- **Authentication**: Custom dengan bcrypt
+- **Authentication**: Custom (plain text untuk kemudahan)
+- **State Management**: React Hooks
+- **API**: Next.js API Routes
 
-## Mobile Optimization
+## Fitur Sistem
 
-- Touch-friendly interface
-- Responsive design
-- Fast loading
-- Offline-capable
-- PWA ready
+### User Management (SuperAdmin):
+- ✅ CRUD user lengkap
+- ✅ Edit username, role, password
+- ✅ Reset password individual/batch
+- ✅ Aktifkan/nonaktifkan user
+- ✅ Activity logging
+
+### Competition Control:
+- ✅ Buat sesi per kelas (PUTRA/PUTRI)
+- ✅ Override control untuk admin
+- ✅ Filter otomatis berdasarkan role
+- ✅ Real-time status update
+
+### Scoring System:
+- ✅ Form dinamis per kategori
+- ✅ Validasi range nilai
+- ✅ Juri terpisah per kelas
+- ✅ Hasil real-time
+
+### Mobile Optimization:
+- ✅ Touch-friendly interface
+- ✅ Responsive design
+- ✅ Fast loading
+- ✅ PWA ready
 
 ## Kontribusi
 
