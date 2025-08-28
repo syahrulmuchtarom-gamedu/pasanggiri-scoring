@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Competition, Score, DESA_LIST, KATEGORI_LIST, GOLONGAN_LIST } from '@/types';
+import { calculateFinalScore } from '@/lib/scoring';
+import ScoringDetails from './ScoringDetails';
 
 interface Props {
   kelas: 'PUTRA' | 'PUTRI';
@@ -10,7 +12,7 @@ interface Props {
 interface CompetitionResult {
   competition: Competition;
   scores: Score[];
-  averageScore: number;
+  finalScore: number;
   juriCount: number;
 }
 
@@ -41,14 +43,14 @@ export default function ResultsView({ kelas }: Props) {
           score.competition_id === competition.id
         );
 
-        const averageScore = competitionScores.length > 0
-          ? competitionScores.reduce((sum: number, score: Score) => sum + score.total_score, 0) / competitionScores.length
+        const finalScore = competitionScores.length > 0
+          ? calculateFinalScore(competitionScores)
           : 0;
 
         resultsMap.set(competition.id, {
           competition,
           scores: competitionScores,
-          averageScore,
+          finalScore,
           juriCount: competitionScores.length
         });
       });
@@ -80,9 +82,9 @@ export default function ResultsView({ kelas }: Props) {
     return acc;
   }, {} as Record<string, CompetitionResult[]>);
 
-  // Sort each group by average score (descending)
+  // Sort each group by final score (descending)
   Object.keys(groupedResults).forEach(key => {
-    groupedResults[key].sort((a, b) => b.averageScore - a.averageScore);
+    groupedResults[key].sort((a, b) => b.finalScore - a.finalScore);
   });
 
   if (loading) {
@@ -139,8 +141,7 @@ export default function ResultsView({ kelas }: Props) {
                       <tr className="border-b">
                         <th className="text-left py-2">Ranking</th>
                         <th className="text-left py-2">Desa</th>
-                        <th className="text-center py-2">Juri</th>
-                        <th className="text-center py-2">Rata-rata</th>
+                        <th className="text-center py-2">Detail Penilaian</th>
                         <th className="text-center py-2">Status</th>
                       </tr>
                     </thead>
@@ -158,9 +159,8 @@ export default function ResultsView({ kelas }: Props) {
                             </span>
                           </td>
                           <td className="py-2 font-medium">{result.competition.desa}</td>
-                          <td className="py-2 text-center">{result.juriCount}/5</td>
-                          <td className="py-2 text-center font-bold">
-                            {result.averageScore.toFixed(1)}
+                          <td className="py-2">
+                            <ScoringDetails scores={result.scores} showDetails={true} />
                           </td>
                           <td className="py-2 text-center">
                             <span className={`px-2 py-1 rounded-full text-xs ${

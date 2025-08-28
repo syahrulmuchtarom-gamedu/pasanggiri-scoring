@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
+import { calculateFinalScore } from '@/lib/scoring';
 
 interface Props {
   kelas: 'PUTRA' | 'PUTRI';
@@ -65,9 +66,9 @@ export default function RankingView({ kelas }: Props) {
           };
         }
 
-        // Calculate total score for this competition (sum of all juri scores)
+        // Calculate total score for this competition using new scoring system
         const competitionScores = scores.filter((score: any) => score.competition_id === comp.id);
-        const totalScore = competitionScores.reduce((sum: number, score: any) => sum + score.total_score, 0);
+        const totalScore = calculateFinalScore(competitionScores);
         
         console.log(`Competition ${comp.desa}-${comp.kategori}: ${competitionScores.length} scores, total: ${totalScore}`);
         

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { calculateFinalScore } from '@/lib/scoring';
 
 export async function GET(request: NextRequest) {
   try {
@@ -42,9 +43,9 @@ export async function GET(request: NextRequest) {
         };
       }
       
-      // Calculate total score for this competition
+      // Calculate total score for this competition using new scoring system
       const competitionScores = scores.filter((score: any) => score.competition_id === comp.id);
-      const totalScore = competitionScores.reduce((sum: number, score: any) => sum + score.total_score, 0);
+      const totalScore = calculateFinalScore(competitionScores);
       
       desaResults[key].categories[comp.kategori] = totalScore;
       desaResults[key].total_score += totalScore;
