@@ -29,9 +29,9 @@ export default function RankingView({ kelas }: Props) {
     try {
       console.log('Fetching results for:', { kelas, selectedGolongan, selectedKategori });
       
-      // Get all completed competitions with scores
+      // Get all competitions with scores (remove COMPLETED filter for now)
       const [competitionsRes, scoresRes] = await Promise.all([
-        fetch(`/api/competitions?kelas=${kelas}&status=COMPLETED`),
+        fetch(`/api/competitions?kelas=${kelas}`),
         fetch('/api/scores')
       ]);
 
