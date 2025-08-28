@@ -16,6 +16,22 @@ export default function SirkulatorDashboard({ user }: Props) {
 
   const kelas = user.role === 'SIRKULATOR_PUTRA' ? 'PUTRA' : 'PUTRI';
 
+  useEffect(() => {
+    const fetchCompetitions = async () => {
+      try {
+        const response = await fetch(`/api/competitions?kelas=${kelas}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCompetitions(data);
+        }
+      } catch (error) {
+        console.error('Error fetching competitions:', error);
+      }
+    };
+
+    fetchCompetitions();
+  }, [kelas]);
+
   const createCompetition = async (desa: string, golongan: string, kategori: string) => {
     setLoading(true);
     try {
