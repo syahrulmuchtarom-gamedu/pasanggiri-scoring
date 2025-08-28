@@ -13,7 +13,7 @@ export default function HomePage() {
           </Link>
           
           <div className="text-sm text-gray-500">
-            <p>Untuk JURI dan SIRKULATOR</p>
+            <p>© 2025 Padepokan Persinas Asad - Jakarta Barat, Cengkareng</p>
           </div>
         </div>
       </div>
