@@ -17,6 +17,9 @@ export default function SuperAdminDashboard({ user }: Props) {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [competitions, setCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [creatingCompetition, setCreatingCompetition] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
   const [showCreateUser, setShowCreateUser] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [editForm, setEditForm] = useState({
@@ -353,8 +356,26 @@ export default function SuperAdminDashboard({ user }: Props) {
     }
   };
 
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToastMessage(message);
+    setToastType(type);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const createCompetition = async (desa: string, golongan: string, kategori: string, kelas: string) => {
-    setLoading(true);
+    const competitionKey = `${desa}-${golongan}-${kategori}-${kelas}`;
+    
+    // Check if competition already exists
+    const existingCompetition = competitions.find(c => 
+      c.desa === desa && c.golongan === golongan && c.kategori === kategori && c.kelas === kelas
+    );
+    
+    if (existingCompetition) {
+      showToast(`⚠️ Sesi ${desa} - ${kategori} sudah ada sebelumnya`, 'info');
+      return;
+    }
+    
+    setCreatingCompetition(competitionKey);
     try {
       const response = await fetch('/api/competitions', {
         method: 'POST',
@@ -365,6 +386,7 @@ export default function SuperAdminDashboard({ user }: Props) {
       if (response.ok) {
         const newCompetition = await response.json();
         setCompetitions([newCompetition, ...competitions]);
+        showToast(`✅ Sesi ${desa} - ${kategori} berhasil dibuat!`, 'success');
         
         await fetch('/api/activity-logs', {
           method: 'POST',
@@ -376,12 +398,26 @@ export default function SuperAdminDashboard({ user }: Props) {
             details: `Membuat sesi: ${desa} - ${kategori} (${kelas})`
           }),
         });
+      } else {
+        showToast(`❌ Gagal membuat sesi ${desa} - ${kategori}`, 'error');
       }
     } catch (error) {
       console.error('Error creating competition:', error);
+      showToast(`❌ Gagal membuat sesi ${desa} - ${kategori}`, 'error');
     } finally {
-      setLoading(false);
+      setCreatingCompetition(null);
     }
+  };
+
+  const isCompetitionCreated = (desa: string, golongan: string, kategori: string, kelas: string) => {
+    return competitions.some(c => 
+      c.desa === desa && c.golongan === golongan && c.kategori === kategori && c.kelas === kelas
+    );
+  };
+
+  const isCompetitionCreating = (desa: string, golongan: string, kategori: string, kelas: string) => {
+    const competitionKey = `${desa}-${golongan}-${kategori}-${kelas}`;
+    return creatingCompetition === competitionKey;
   };
 
   const toggleCompetitionStatus = async (competition: any) => {
@@ -443,6 +479,16 @@ export default function SuperAdminDashboard({ user }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white font-medium ${
+          toastType === 'success' ? 'bg-green-500' :
+          toastType === 'error' ? 'bg-red-500' :
+          'bg-blue-500'
+        }`}>
+          {toastMessage}
+        </div>
+      )}
       <div className="flex space-x-4 border-b">
         <button
           onClick={() => setActiveTab('users')}
@@ -747,16 +793,27 @@ export default function SuperAdminDashboard({ user }: Props) {
                         <div key={golongan} className="mb-3">
                           <p className="text-sm font-medium text-gray-600 mb-2">{golongan}</p>
                           <div className="grid grid-cols-2 gap-2">
-                            {KATEGORI_LIST.map(kategori => (
-                              <button
-                                key={kategori}
-                                onClick={() => createCompetition(desa, golongan, kategori, competitionSubTab.toUpperCase())}
-                                disabled={loading}
-                                className="text-xs bg-primary-100 hover:bg-primary-200 text-primary-700 px-2 py-1 rounded disabled:opacity-50"
-                              >
-                                {kategori}
-                              </button>
-                            ))}
+                            {KATEGORI_LIST.map(kategori => {
+                              const isCreated = isCompetitionCreated(desa, golongan, kategori, competitionSubTab.toUpperCase());
+                              const isCreating = isCompetitionCreating(desa, golongan, kategori, competitionSubTab.toUpperCase());
+                              
+                              return (
+                                <button
+                                  key={kategori}
+                                  onClick={() => createCompetition(desa, golongan, kategori, competitionSubTab.toUpperCase())}
+                                  disabled={isCreated || isCreating}
+                                  className={`text-xs px-2 py-1 rounded font-medium transition-all duration-200 ${
+                                    isCreated 
+                                      ? 'bg-green-100 text-green-800 cursor-not-allowed'
+                                      : isCreating
+                                      ? 'bg-yellow-100 text-yellow-800 cursor-wait'
+                                      : 'bg-primary-100 hover:bg-primary-200 text-primary-700 hover:shadow-sm'
+                                  }`}
+                                >
+                                  {isCreated ? '✅ CREATED' : isCreating ? '⏳ Creating...' : kategori}
+                                </button>
+                              );
+                            })}
                           </div>
                         </div>
                       ))}
