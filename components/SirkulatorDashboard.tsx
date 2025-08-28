@@ -71,6 +71,22 @@ export default function SirkulatorDashboard({ user }: Props) {
     }
   };
 
+  const deleteCompetition = async (competitionId: string) => {
+    if (!confirm('Yakin ingin menghapus sesi ini?')) return;
+    
+    try {
+      const response = await fetch(`/api/competitions?id=${competitionId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCompetitions(competitions.filter(c => c.id !== competitionId));
+      }
+    } catch (error) {
+      console.error('Error deleting competition:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex space-x-4 border-b">
@@ -154,6 +170,12 @@ export default function SirkulatorDashboard({ user }: Props) {
                         className="btn-secondary text-xs"
                       >
                         {competition.status === 'ACTIVE' ? 'Selesai' : 'Aktifkan'}
+                      </button>
+                      <button
+                        onClick={() => deleteCompetition(competition.id)}
+                        className="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-xs"
+                      >
+                        Hapus
                       </button>
                     </div>
                   </div>
