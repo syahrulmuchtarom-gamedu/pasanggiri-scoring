@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function SuperAdminDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'logs' | 'system'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'details' | 'logs' | 'system'>('users');
   const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri'>('putra');
   const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
   const [users, setUsers] = useState<User[]>([]);
@@ -465,6 +465,16 @@ export default function SuperAdminDashboard({ user }: Props) {
           Pertandingan
         </button>
         <button
+          onClick={() => setActiveTab('details')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'details'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Detail Penilaian
+        </button>
+        <button
           onClick={() => setActiveTab('logs')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'logs'
@@ -810,6 +820,23 @@ export default function SuperAdminDashboard({ user }: Props) {
               <RankingView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
             </div>
           )}
+        </div>
+      )}
+
+      {activeTab === 'details' && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">Detail Penilaian</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRA</h3>
+              <ResultsView kelas="PUTRA" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRI</h3>
+              <ResultsView kelas="PUTRI" />
+            </div>
+          </div>
         </div>
       )}
 
