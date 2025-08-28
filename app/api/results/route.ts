@@ -8,69 +8,46 @@ export async function GET(request: NextRequest) {
     const golongan = searchParams.get('golongan');
     const kategori = searchParams.get('kategori');
 
-    // Get all competitions with scores
-    let query = `
-      SELECT 
-        c.id,
-        c.desa,
-        c.kelas,
-        c.golongan,
-        c.kategori,
-        c.status,
-        COALESCE(
-          (SELECT SUM(s.total_score) 
-           FROM scores s 
-           WHERE s.competition_id = c.id), 0
-        ) as total_score,
-        COALESCE(
-          (SELECT COUNT(*) 
-           FROM scores s 
-           WHERE s.competition_id = c.id), 0
-        ) as juri_count
-      FROM competitions c
-      WHERE c.status = 'COMPLETED'
-    `;
+    // Get competitions
+    let competitionsQuery = supabaseAdmin
+      .from('competitions')
+      .select('*')
+      .eq('status', 'COMPLETED');
 
-    const params = [];
-    if (kelas) {
-      query += ` AND c.kelas = $${params.length + 1}`;
-      params.push(kelas);
-    }
-    if (golongan) {
-      query += ` AND c.golongan = $${params.length + 1}`;
-      params.push(golongan);
-    }
-    if (kategori) {
-      query += ` AND c.kategori = $${params.length + 1}`;
-      params.push(kategori);
-    }
+    if (kelas) competitionsQuery = competitionsQuery.eq('kelas', kelas);
+    if (golongan) competitionsQuery = competitionsQuery.eq('golongan', golongan);
+    if (kategori) competitionsQuery = competitionsQuery.eq('kategori', kategori);
 
-    query += ` ORDER BY c.desa, c.kategori`;
+    const { data: competitions, error: compError } = await competitionsQuery;
+    if (compError) throw compError;
 
-    const { data, error } = await supabaseAdmin.rpc('execute_sql', {
-      sql_query: query,
-      params: params
-    });
-
-    if (error) throw error;
+    // Get all scores
+    const { data: scores, error: scoresError } = await supabaseAdmin
+      .from('scores')
+      .select('*');
+    if (scoresError) throw scoresError;
 
     // Group by desa and calculate totals
     const desaResults: any = {};
     
-    data.forEach((row: any) => {
-      const key = `${row.desa}-${row.kelas}-${row.golongan}`;
+    competitions.forEach((comp: any) => {
+      const key = `${comp.desa}-${comp.kelas}-${comp.golongan}`;
       if (!desaResults[key]) {
         desaResults[key] = {
-          desa: row.desa,
-          kelas: row.kelas,
-          golongan: row.golongan,
+          desa: comp.desa,
+          kelas: comp.kelas,
+          golongan: comp.golongan,
           categories: {},
           total_score: 0
         };
       }
       
-      desaResults[key].categories[row.kategori] = row.total_score;
-      desaResults[key].total_score += row.total_score;
+      // Calculate total score for this competition
+      const competitionScores = scores.filter((score: any) => score.competition_id === comp.id);
+      const totalScore = competitionScores.reduce((sum: number, score: any) => sum + score.total_score, 0);
+      
+      desaResults[key].categories[comp.kategori] = totalScore;
+      desaResults[key].total_score += totalScore;
     });
 
     // Convert to array and sort by total score
