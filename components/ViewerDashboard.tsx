@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { User } from '@/types';
-import ResultsView from './ResultsView';
+import RankingView from './RankingView';
 
 interface Props {
   user: User;
@@ -46,7 +46,7 @@ export default function ViewerDashboard({ user }: Props) {
           </div>
         </div>
         
-        <ResultsView kelas={activeTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
+        <RankingView kelas={activeTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
       </div>
     </div>
   );

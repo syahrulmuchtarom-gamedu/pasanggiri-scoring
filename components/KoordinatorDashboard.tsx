@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { User, Competition } from '@/types';
-import ResultsView from './ResultsView';
+import RankingView from './RankingView';
 
 interface Props {
   user: User;
@@ -179,8 +179,8 @@ export default function KoordinatorDashboard({ user }: Props) {
 
       {activeTab === 'results' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Hasil Pertandingan - {kelas}</h2>
-          <ResultsView kelas={kelas} />
+          <h2 className="text-xl font-semibold">Ranking & Hasil - {kelas}</h2>
+          <RankingView kelas={kelas} />
         </div>
       )}
     </div>

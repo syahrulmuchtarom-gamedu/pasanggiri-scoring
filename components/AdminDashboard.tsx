@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { User, Competition, ActivityLog } from '@/types';
-import ResultsView from './ResultsView';
+import RankingView from './RankingView';
 
 interface Props {
   user: User;
@@ -187,12 +187,12 @@ export default function AdminDashboard({ user }: Props) {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Kelas PUTRA</h3>
-              <ResultsView kelas="PUTRA" />
+              <h3 className="text-lg font-medium mb-4">Ranking PUTRA</h3>
+              <RankingView kelas="PUTRA" />
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-4">Kelas PUTRI</h3>
-              <ResultsView kelas="PUTRI" />
+              <h3 className="text-lg font-medium mb-4">Ranking PUTRI</h3>
+              <RankingView kelas="PUTRI" />
             </div>
           </div>
         </div>

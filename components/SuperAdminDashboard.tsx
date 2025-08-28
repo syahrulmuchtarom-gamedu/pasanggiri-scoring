@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { User, ActivityLog, DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
 import ResultsView from './ResultsView';
+import RankingView from './RankingView';
 
 interface Props {
   user: User;
@@ -804,9 +805,9 @@ export default function SuperAdminDashboard({ user }: Props) {
           {competitionView === 'results' && (
             <div>
               <h3 className="text-lg font-semibold mb-4">
-                Hasil Pertandingan - {competitionSubTab.toUpperCase()}
+                Ranking & Hasil - {competitionSubTab.toUpperCase()}
               </h3>
-              <ResultsView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
+              <RankingView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
             </div>
           )}
         </div>
