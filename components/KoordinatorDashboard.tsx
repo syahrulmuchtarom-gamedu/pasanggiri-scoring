@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { User, Competition } from '@/types';
 import RankingView from './RankingView';
+import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
 }
 
 export default function KoordinatorDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'results'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'results' | 'details'>('overview');
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   
   const kelas = user.role === 'KOORDINATOR_PUTRA' ? 'PUTRA' : 'PUTRI';
@@ -83,7 +84,17 @@ export default function KoordinatorDashboard({ user }: Props) {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          Hasil
+          Ranking
+        </button>
+        <button
+          onClick={() => setActiveTab('details')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'details'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Detail Penilaian
         </button>
       </div>
 
@@ -181,6 +192,13 @@ export default function KoordinatorDashboard({ user }: Props) {
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Ranking & Hasil - {kelas}</h2>
           <RankingView kelas={kelas} />
+        </div>
+      )}
+
+      {activeTab === 'details' && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">Detail Penilaian - {kelas}</h2>
+          <ResultsView kelas={kelas} />
         </div>
       )}
     </div>

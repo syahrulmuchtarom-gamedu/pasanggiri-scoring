@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import { User, Competition, ActivityLog } from '@/types';
 import RankingView from './RankingView';
+import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
 }
 
 export default function AdminDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'users' | 'logs'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'details' | 'users' | 'logs'>('overview');
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -97,7 +98,17 @@ export default function AdminDashboard({ user }: Props) {
               : 'border-transparent text-gray-500 hover:text-gray-700'
           }`}
         >
-          Pertandingan
+          Ranking
+        </button>
+        <button
+          onClick={() => setActiveTab('details')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'details'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Detail Penilaian
         </button>
         <button
           onClick={() => setActiveTab('users')}
@@ -183,7 +194,7 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'competitions' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Semua Pertandingan</h2>
+          <h2 className="text-xl font-semibold">Ranking Pertandingan</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
@@ -193,6 +204,23 @@ export default function AdminDashboard({ user }: Props) {
             <div>
               <h3 className="text-lg font-medium mb-4">Ranking PUTRI</h3>
               <RankingView kelas="PUTRI" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'details' && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">Detail Penilaian</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRA</h3>
+              <ResultsView kelas="PUTRA" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRI</h3>
+              <ResultsView kelas="PUTRI" />
             </div>
           </div>
         </div>
