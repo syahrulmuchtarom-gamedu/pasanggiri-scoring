@@ -87,7 +87,76 @@ export default function RankingView({ kelas }: Props) {
   };
 
   const exportToPDF = () => {
-    window.print();
+    // Create clean HTML for PDF
+    const title = `Ranking ${selectedKategori === 'ALL' ? 'Juara Umum' : selectedKategori} - ${kelas}${selectedGolongan !== 'ALL' ? ` - ${selectedGolongan}` : ''}`;
+    
+    const tableHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${title}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          h1 { text-align: center; margin-bottom: 30px; color: #333; }
+          table { width: 100%; border-collapse: collapse; margin: 0 auto; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background-color: #f5f5f5; font-weight: bold; text-align: center; }
+          td:first-child, td:last-child { text-align: center; font-weight: bold; }
+          .rank-1 { background-color: #fff9c4; }
+          .rank-2 { background-color: #f3f4f6; }
+          .rank-3 { background-color: #fef3c7; }
+          .total { color: #2563eb; }
+          @media print {
+            body { margin: 0; }
+            h1 { page-break-after: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>${title}</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Desa</th>
+              <th>Golongan</th>
+              ${selectedKategori === 'ALL' ? KATEGORI_LIST.map(kat => `<th>${kat}</th>`).join('') : ''}
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${results.map((result, index) => `
+              <tr class="${index < 3 ? `rank-${index + 1}` : ''}">
+                <td>
+                  ${index + 1}
+                  ${index === 0 ? ' 🥇' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+                </td>
+                <td>${result.desa}</td>
+                <td>${result.golongan}</td>
+                ${selectedKategori === 'ALL' ? KATEGORI_LIST.map(kat => `<td style="text-align: center;">${result.categories[kat] || '-'}</td>`).join('') : ''}
+                <td class="total">${result.total_score}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <script>
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() {
+              window.close();
+            }
+          }
+        </script>
+      </body>
+      </html>
+    `;
+    
+    // Open new window and print
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(tableHTML);
+      printWindow.document.close();
+    }
   };
 
   const exportToExcel = () => {
