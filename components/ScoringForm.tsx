@@ -20,8 +20,24 @@ export default function ScoringForm({ competition, juriName, onSubmitted }: Prop
   const maxPossibleScore = criteria.reduce((sum, c) => sum + c.max, 0);
 
   const handleScoreChange = (criteriaName: string, value: string) => {
-    const numValue = parseFloat(value) || 0;
+    // Force integer only - no decimals allowed
+    const numValue = parseInt(value) || 0;
     setScores(prev => ({ ...prev, [criteriaName]: numValue }));
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    // Prevent decimal point and comma input
+    if (e.key === '.' || e.key === ',') {
+      e.preventDefault();
+    }
+  };
+
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    // Remove any decimal values that might appear
+    const target = e.target as HTMLInputElement;
+    if (target.value.includes('.') || target.value.includes(',')) {
+      target.value = Math.floor(parseFloat(target.value) || 0).toString();
+    }
   };
 
   const validateScores = () => {
@@ -98,9 +114,11 @@ export default function ScoringForm({ competition, juriName, onSubmitted }: Prop
                   type="number"
                   min={criterion.min}
                   max={criterion.max}
-                  step="0.1"
+                  step="1"
                   value={scores[criterion.name] || ''}
                   onChange={(e) => handleScoreChange(criterion.name, e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  onInput={handleInput}
                   className="input-field text-lg font-medium text-center"
                   placeholder={`${criterion.min}-${criterion.max}`}
                   required
@@ -114,7 +132,7 @@ export default function ScoringForm({ competition, juriName, onSubmitted }: Prop
           <div className="flex justify-between items-center">
             <span className="font-medium">Total Nilai:</span>
             <span className="text-2xl font-bold text-primary-600">
-              {totalScore.toFixed(1)} / {maxPossibleScore}
+              {totalScore} / {maxPossibleScore}
             </span>
           </div>
         </div>
