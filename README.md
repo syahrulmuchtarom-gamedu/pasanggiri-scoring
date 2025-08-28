@@ -5,13 +5,15 @@ Aplikasi web untuk kompetisi pencak silat "Pasanggiri" menggunakan Next.js, Supa
 ## Fitur Utama
 
 - **User Management**: 8 Role berbeda dengan akses sesuai fungsi
-- **Sistem Penilaian**: Form dinamis untuk 5 kategori kompetisi
+- **Sistem Penilaian Baru**: Buang nilai tertinggi & terendah, ambil 3 nilai tengah
+- **Detail Penilaian**: Visual feedback nilai yang dipakai vs dibuang
 - **Dashboard**: Interface terpisah untuk setiap role
 - **Real-time**: Update langsung saat input nilai
 - **Mobile-First**: Responsif untuk smartphone
-- **Validasi**: Range nilai sesuai kriteria setiap kategori
+- **Validasi**: Range nilai bulat (integer) sesuai kriteria
 - **Activity Logging**: Track semua aktivitas user
 - **Master Control**: SuperAdmin dengan kontrol penuh sistem
+- **UI/UX Feedback**: Toast notifications & button state changes
 
 ## Kategori Kompetisi
 
@@ -71,6 +73,27 @@ npm run dev
 ### VIEWER (Read-Only Access):
 - Username: `viewer` | Password: `password123`
 - Fitur: Lihat hasil pertandingan (read-only)
+
+## Sistem Penilaian Baru
+
+### Logika Perhitungan:
+1. **5 Juri memberikan nilai** → [19, 20, 30, 40, 50]
+2. **Urutkan dari kecil ke besar** → [19, 20, 30, 40, 50]
+3. **Buang nilai terendah dan tertinggi** → ~~19~~, 20, 30, 40, ~~50~~
+4. **Ambil 3 nilai tengah** → [20, 30, 40]
+5. **Jumlahkan 3 nilai tengah** → 20 + 30 + 40 = **90**
+6. **Nilai 90 = Nilai Final**
+
+### Keuntungan:
+- **Eliminasi bias ekstrem** (juri terlalu pelit/royal)
+- **Lebih objektif** dengan nilai moderat
+- **Standar internasional** untuk kompetisi olahraga
+- **Detail transparan** - user bisa lihat nilai mana yang dipakai/dibuang
+
+### Akses Detail Penilaian:
+- **SuperAdmin**: Tab "Detail Penilaian" → Lihat PUTRA & PUTRI
+- **Admin**: Tab "Detail Penilaian" → Lihat PUTRA & PUTRI
+- **Koordinator**: Tab "Detail Penilaian" → Lihat sesuai kelas
 
 ## Workflow Sistem
 
@@ -137,12 +160,18 @@ git push -u origin main
 - ✅ Activity logging
 
 ### Competition Control:
+- ✅ **UI/UX Feedback**: Toast notifications & button states
+- ✅ **Prevent Duplicate**: Tidak bisa buat sesi yang sama 2x
+- ✅ **Visual Status**: Button berubah dari clickable → creating → created
 - ✅ Buat sesi per kelas (PUTRA/PUTRI)
 - ✅ Override control untuk admin
 - ✅ Filter otomatis berdasarkan role
 - ✅ Real-time status update
 
 ### Scoring System:
+- ✅ **Sistem Penilaian Baru**: Eliminasi nilai tertinggi & terendah
+- ✅ **Detail Penilaian**: Tampilkan nilai yang dipakai/dibuang
+- ✅ **Input Integer Only**: Nilai bulat tanpa desimal
 - ✅ Form dinamis per kategori
 - ✅ Validasi range nilai
 - ✅ Juri terpisah per kelas
