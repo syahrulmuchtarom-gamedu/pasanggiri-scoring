@@ -21,7 +21,7 @@ export default function SuperAdminDashboard({ user }: Props) {
   const [newUser, setNewUser] = useState({
     username: '',
     password: '',
-    role: 'JURI' as any
+    role: 'JURI_PUTRA' as any
   });
 
   useEffect(() => {
@@ -431,7 +431,8 @@ export default function SuperAdminDashboard({ user }: Props) {
                   onChange={(e) => setNewUser({...newUser, role: e.target.value as any})}
                   className="border rounded px-3 py-2"
                 >
-                  <option value="JURI">JURI</option>
+                  <option value="JURI_PUTRA">JURI PUTRA</option>
+                  <option value="JURI_PUTRI">JURI PUTRI</option>
                   <option value="SIRKULATOR_PUTRA">SIRKULATOR PUTRA</option>
                   <option value="SIRKULATOR_PUTRI">SIRKULATOR PUTRI</option>
                   <option value="KOORDINATOR_PUTRA">KOORDINATOR PUTRA</option>

@@ -12,14 +12,16 @@ export default function JuriDashboard({ user }: Props) {
   const [activeCompetitions, setActiveCompetitions] = useState<Competition[]>([]);
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  const kelas = user.role === 'JURI_PUTRA' ? 'PUTRA' : 'PUTRI';
 
   useEffect(() => {
     fetchActiveCompetitions();
-  }, []);
+  }, [kelas]);
 
   const fetchActiveCompetitions = async () => {
     try {
-      const response = await fetch('/api/competitions?status=ACTIVE');
+      const response = await fetch(`/api/competitions?status=ACTIVE&kelas=${kelas}`);
       if (response.ok) {
         const competitions = await response.json();
         setActiveCompetitions(competitions);
@@ -74,7 +76,7 @@ export default function JuriDashboard({ user }: Props) {
   return (
     <div className="space-y-6">
       <div className="card">
-        <h2 className="text-lg font-semibold mb-4">Pertandingan Aktif</h2>
+        <h2 className="text-lg font-semibold mb-4">Pertandingan Aktif - {kelas}</h2>
         
         {activeCompetitions.length === 0 ? (
           <div className="text-center py-8">

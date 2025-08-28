@@ -78,7 +78,7 @@ export default function DashboardPage() {
         {(user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') && (
           <SirkulatorDashboard user={user} />
         )}
-        {user.role === 'JURI' && <JuriDashboard user={user} />}
+        {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} />}
         {user.role === 'VIEWER' && <ViewerDashboard user={user} />}
       </main>
     </div>
