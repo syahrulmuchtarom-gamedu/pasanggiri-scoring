@@ -13,8 +13,6 @@ export default function SuperAdminDashboard({ user }: Props) {
   const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'logs' | 'system'>('users');
   const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri'>('putra');
   const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
-  const [singleForm, setSingleForm] = useState({ desa: '', golongan: '', kategori: '' });
-  const [batchForm, setBatchForm] = useState({ desa: '', golongan: '', categories: [] as string[] });
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [competitions, setCompetitions] = useState<any[]>([]);
@@ -443,104 +441,6 @@ export default function SuperAdminDashboard({ user }: Props) {
     }
   };
 
-  const handleSingleCreate = async () => {
-    if (!singleForm.desa || !singleForm.golongan || !singleForm.kategori) {
-      alert('Mohon lengkapi semua field');
-      return;
-    }
-    
-    await createCompetition(singleForm.desa, singleForm.golongan, singleForm.kategori, competitionSubTab.toUpperCase());
-    
-    // Reset form
-    setSingleForm({ desa: '', golongan: '', kategori: '' });
-  };
-
-  const handleCategoryToggle = (kategori: string, checked: boolean) => {
-    setBatchForm(prev => ({
-      ...prev,
-      categories: checked 
-        ? [...prev.categories, kategori]
-        : prev.categories.filter(c => c !== kategori)
-    }));
-  };
-
-  const handleBatchCreate = async () => {
-    if (!batchForm.desa || !batchForm.golongan || batchForm.categories.length === 0) {
-      alert('Mohon lengkapi semua field');
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      for (const kategori of batchForm.categories) {
-        await createCompetition(batchForm.desa, batchForm.golongan, kategori, competitionSubTab.toUpperCase());
-      }
-      
-      // Reset form
-      setBatchForm({ desa: '', golongan: '', categories: [] });
-      alert(`Berhasil membuat ${batchForm.categories.length} sesi pertandingan`);
-    } catch (error) {
-      console.error('Error batch creating:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStatusSummary = () => {
-    const summary: Record<string, { desa: string; golongan: string; count: number }> = {};
-    
-    // Initialize all combinations
-    DESA_LIST.forEach(desa => {
-      GOLONGAN_LIST.forEach(golongan => {
-        const key = `${desa}-${golongan}`;
-        summary[key] = { desa, golongan, count: 0 };
-      });
-    });
-    
-    // Count existing competitions
-    competitions
-      .filter(c => c.kelas === competitionSubTab.toUpperCase())
-      .forEach(comp => {
-        const key = `${comp.desa}-${comp.golongan}`;
-        if (summary[key]) {
-          summary[key].count++;
-        }
-      });
-    
-    return Object.values(summary).sort((a, b) => {
-      if (a.count !== b.count) return b.count - a.count;
-      return a.desa.localeCompare(b.desa);
-    });
-  };
-
-  const quickComplete = async (desa: string, golongan: string) => {
-    const existing = competitions.filter(c => 
-      c.desa === desa && 
-      c.golongan === golongan && 
-      c.kelas === competitionSubTab.toUpperCase()
-    );
-    
-    const missing = KATEGORI_LIST.filter(kategori => 
-      !existing.some(c => c.kategori === kategori)
-    );
-    
-    if (missing.length === 0) return;
-    
-    if (confirm(`Buat ${missing.length} kategori yang kurang untuk ${desa} - ${golongan}?`)) {
-      setLoading(true);
-      try {
-        for (const kategori of missing) {
-          await createCompetition(desa, golongan, kategori, competitionSubTab.toUpperCase());
-        }
-        alert(`Berhasil melengkapi ${missing.length} kategori`);
-      } catch (error) {
-        console.error('Error completing:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex space-x-4 border-b">
@@ -823,157 +723,33 @@ export default function SuperAdminDashboard({ user }: Props) {
 
           {competitionView === 'control' && (
             <div className="space-y-6">
-              {/* Smart Form - Single Create */}
               <div className="card">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  📝 Buat Sesi Baru - {competitionSubTab.toUpperCase()}
+                <h3 className="text-lg font-semibold mb-4">
+                  Buat Sesi Pertandingan Baru - {competitionSubTab.toUpperCase()}
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Desa</label>
-                    <select 
-                      value={singleForm.desa}
-                      onChange={(e) => setSingleForm({...singleForm, desa: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-                    >
-                      <option value="">Pilih Desa</option>
-                      {DESA_LIST.map(desa => (
-                        <option key={desa} value={desa}>{desa}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Golongan</label>
-                    <select 
-                      value={singleForm.golongan}
-                      onChange={(e) => setSingleForm({...singleForm, golongan: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-                    >
-                      <option value="">Pilih Golongan</option>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {DESA_LIST.map(desa => (
+                    <div key={desa} className="border rounded-lg p-4">
+                      <h4 className="font-medium mb-3">{desa}</h4>
+                      
                       {GOLONGAN_LIST.map(golongan => (
-                        <option key={golongan} value={golongan}>{golongan}</option>
+                        <div key={golongan} className="mb-3">
+                          <p className="text-sm font-medium text-gray-600 mb-2">{golongan}</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {KATEGORI_LIST.map(kategori => (
+                              <button
+                                key={kategori}
+                                onClick={() => createCompetition(desa, golongan, kategori, competitionSubTab.toUpperCase())}
+                                disabled={loading}
+                                className="text-xs bg-primary-100 hover:bg-primary-200 text-primary-700 px-2 py-1 rounded disabled:opacity-50"
+                              >
+                                {kategori}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Kategori</label>
-                    <select 
-                      value={singleForm.kategori}
-                      onChange={(e) => setSingleForm({...singleForm, kategori: e.target.value})}
-                      className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-                    >
-                      <option value="">Pilih Kategori</option>
-                      {KATEGORI_LIST.map(kategori => (
-                        <option key={kategori} value={kategori}>{kategori}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => handleSingleCreate()}
-                      disabled={loading}
-                      className="w-full bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 flex items-center justify-center"
-                    >
-                      🚀 Buat Sesi
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Batch Create */}
-              <div className="card">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  ⚡ Quick Create - Semua Kategori
-                </h3>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Desa</label>
-                      <select 
-                        value={batchForm.desa}
-                        onChange={(e) => setBatchForm({...batchForm, desa: e.target.value})}
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-                      >
-                        <option value="">Pilih Desa</option>
-                        {DESA_LIST.map(desa => (
-                          <option key={desa} value={desa}>{desa}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2">Golongan</label>
-                      <select 
-                        value={batchForm.golongan}
-                        onChange={(e) => setBatchForm({...batchForm, golongan: e.target.value})}
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500"
-                      >
-                        <option value="">Pilih Golongan</option>
-                        {GOLONGAN_LIST.map(golongan => (
-                          <option key={golongan} value={golongan}>{golongan}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Kategori</label>
-                    <div className="space-y-2">
-                      {KATEGORI_LIST.map(kategori => (
-                        <label key={kategori} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={batchForm.categories.includes(kategori)}
-                            onChange={(e) => handleCategoryToggle(kategori, e.target.checked)}
-                            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-                          />
-                          <span className="text-sm">{kategori}</span>
-                        </label>
-                      ))}
-                    </div>
-                    <button
-                      onClick={handleBatchCreate}
-                      disabled={loading || !batchForm.desa || !batchForm.golongan || batchForm.categories.length === 0}
-                      className="w-full mt-4 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center justify-center"
-                    >
-                      ⚡ Buat Semua Sekaligus ({batchForm.categories.length})
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Status Dashboard */}
-              <div className="card">
-                <h3 className="text-lg font-semibold mb-4 flex items-center">
-                  📊 Status Sesi - {competitionSubTab.toUpperCase()}
-                </h3>
-                
-                <div className="space-y-3">
-                  {getStatusSummary().map(status => (
-                    <div key={`${status.desa}-${status.golongan}`} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          status.count === 5 ? 'bg-green-500' :
-                          status.count > 0 ? 'bg-yellow-500' : 'bg-gray-300'
-                        }`}></div>
-                        <span className="font-medium">{status.desa} - {status.golongan}</span>
-                        <span className="text-sm text-gray-600">[{status.count}/5]</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {status.count < 5 && (
-                          <button
-                            onClick={() => quickComplete(status.desa, status.golongan)}
-                            className="text-xs bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-1 rounded"
-                          >
-                            + Lengkapi
-                          </button>
-                        )}
-                        <span className="text-xs text-gray-500">
-                          {status.count === 5 ? '✅ Lengkap' : 
-                           status.count > 0 ? '🟡 Sebagian' : '⚪ Kosong'}
-                        </span>
-                      </div>
                     </div>
                   ))}
                 </div>
