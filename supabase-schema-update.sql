@@ -49,4 +49,5 @@ UPDATE users SET is_active = true WHERE is_active IS NULL;
 
 -- Enable RLS for activity_logs
 ALTER TABLE activity_logs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all operations on activity_logs" ON activity_logs;
 CREATE POLICY "Allow all operations on activity_logs" ON activity_logs FOR ALL USING (true);

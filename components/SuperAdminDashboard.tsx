@@ -1,16 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, ActivityLog } from '@/types';
+import { User, ActivityLog, DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
+import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
 }
 
 export default function SuperAdminDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'users' | 'logs' | 'system'>('users');
+  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'logs' | 'system'>('users');
+  const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri'>('putra');
+  const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
+  const [competitions, setCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showCreateUser, setShowCreateUser] = useState(false);
 
@@ -23,6 +27,7 @@ export default function SuperAdminDashboard({ user }: Props) {
   useEffect(() => {
     fetchUsers();
     fetchLogs();
+    fetchCompetitions();
   }, []);
 
   const fetchUsers = async () => {
@@ -46,6 +51,18 @@ export default function SuperAdminDashboard({ user }: Props) {
       }
     } catch (error) {
       console.error('Error fetching logs:', error);
+    }
+  };
+
+  const fetchCompetitions = async () => {
+    try {
+      const response = await fetch('/api/competitions');
+      if (response.ok) {
+        const data = await response.json();
+        setCompetitions(data);
+      }
+    } catch (error) {
+      console.error('Error fetching competitions:', error);
     }
   };
 
@@ -246,6 +263,94 @@ export default function SuperAdminDashboard({ user }: Props) {
     }
   };
 
+  const createCompetition = async (desa: string, golongan: string, kategori: string, kelas: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/competitions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ desa, kelas, golongan, kategori }),
+      });
+
+      if (response.ok) {
+        const newCompetition = await response.json();
+        setCompetitions([newCompetition, ...competitions]);
+        
+        await fetch('/api/activity-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            username: user.username,
+            action: 'CREATE_COMPETITION',
+            details: `Membuat sesi: ${desa} - ${kategori} (${kelas})`
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Error creating competition:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleCompetitionStatus = async (competition: any) => {
+    try {
+      const newStatus = competition.status === 'ACTIVE' ? 'COMPLETED' : 'ACTIVE';
+      const response = await fetch(`/api/competitions/${competition.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        setCompetitions(competitions.map(c => 
+          c.id === competition.id ? { ...c, status: newStatus } : c
+        ));
+        
+        await fetch('/api/activity-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            username: user.username,
+            action: 'TOGGLE_COMPETITION_STATUS',
+            details: `${newStatus === 'ACTIVE' ? 'Mengaktifkan' : 'Menyelesaikan'} sesi: ${competition.desa} - ${competition.kategori}`
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Error updating competition:', error);
+    }
+  };
+
+  const deleteCompetition = async (competitionId: string, competitionName: string) => {
+    if (!confirm(`Yakin ingin menghapus sesi ${competitionName}?`)) return;
+    
+    try {
+      const response = await fetch(`/api/competitions?id=${competitionId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCompetitions(competitions.filter(c => c.id !== competitionId));
+        
+        await fetch('/api/activity-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_id: user.id,
+            username: user.username,
+            action: 'DELETE_COMPETITION',
+            details: `Menghapus sesi: ${competitionName}`
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting competition:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex space-x-4 border-b">
@@ -258,6 +363,16 @@ export default function SuperAdminDashboard({ user }: Props) {
           }`}
         >
           Manajemen User
+        </button>
+        <button
+          onClick={() => setActiveTab('competitions')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'competitions'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Pertandingan
         </button>
         <button
           onClick={() => setActiveTab('logs')}
@@ -394,6 +509,151 @@ export default function SuperAdminDashboard({ user }: Props) {
               </table>
             </div>
           </div>
+        </div>
+      )}
+
+      {activeTab === 'competitions' && (
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold">Kontrol Pertandingan</h2>
+          {console.log('Competitions tab rendered, competitionSubTab:', competitionSubTab)}
+          
+          {/* Class Tabs */}
+          <div className="flex space-x-4 border-b">
+            <button
+              onClick={() => setCompetitionSubTab('putra')}
+              className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+                competitionSubTab === 'putra'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              KELAS PUTRA
+            </button>
+            <button
+              onClick={() => setCompetitionSubTab('putri')}
+              className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+                competitionSubTab === 'putri'
+                  ? 'border-pink-500 text-pink-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              KELAS PUTRI
+            </button>
+          </div>
+
+          {/* Competition View Tabs */}
+          <div className="flex space-x-4 border-b">
+            <button
+              onClick={() => setCompetitionView('control')}
+              className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+                competitionView === 'control'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Kontrol Pertandingan
+            </button>
+            <button
+              onClick={() => setCompetitionView('results')}
+              className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+                competitionView === 'results'
+                  ? 'border-purple-500 text-purple-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Hasil Pertandingan
+            </button>
+          </div>
+
+          {competitionView === 'control' && (
+            <div className="space-y-6">
+              <div className="card">
+                <h3 className="text-lg font-semibold mb-4">
+                  Buat Sesi Pertandingan Baru - {competitionSubTab.toUpperCase()}
+                </h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {DESA_LIST.map(desa => (
+                    <div key={desa} className="border rounded-lg p-4">
+                      <h4 className="font-medium mb-3">{desa}</h4>
+                      
+                      {GOLONGAN_LIST.map(golongan => (
+                        <div key={golongan} className="mb-3">
+                          <p className="text-sm font-medium text-gray-600 mb-2">{golongan}</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            {KATEGORI_LIST.map(kategori => (
+                              <button
+                                key={kategori}
+                                onClick={() => createCompetition(desa, golongan, kategori, competitionSubTab.toUpperCase())}
+                                disabled={loading}
+                                className="text-xs bg-primary-100 hover:bg-primary-200 text-primary-700 px-2 py-1 rounded disabled:opacity-50"
+                              >
+                                {kategori}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card">
+                <h3 className="text-lg font-semibold mb-4">
+                  Sesi {competitionSubTab.toUpperCase()} - Override Control
+                </h3>
+                
+                {competitions.filter(c => c.kelas === competitionSubTab.toUpperCase()).length === 0 ? (
+                  <p className="text-gray-500">Belum ada sesi pertandingan untuk kelas {competitionSubTab.toUpperCase()}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {competitions
+                      .filter(c => c.kelas === competitionSubTab.toUpperCase())
+                      .map(competition => (
+                      <div key={competition.id} className="flex items-center justify-between p-3 border rounded-lg">
+                        <div>
+                          <p className="font-medium">{competition.desa} - {competition.kategori}</p>
+                          <p className="text-sm text-gray-600">{competition.golongan} {competition.kelas}</p>
+                          <p className="text-xs text-gray-500">{new Date(competition.created_at).toLocaleString()}</p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            competition.status === 'ACTIVE' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {competition.status}
+                          </span>
+                          <button
+                            onClick={() => toggleCompetitionStatus(competition)}
+                            className="btn-secondary text-xs"
+                          >
+                            {competition.status === 'ACTIVE' ? 'Selesai' : 'Aktifkan'}
+                          </button>
+                          <button
+                            onClick={() => deleteCompetition(competition.id, `${competition.desa} - ${competition.kategori}`)}
+                            className="bg-red-100 hover:bg-red-200 text-red-700 px-2 py-1 rounded text-xs"
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {competitionView === 'results' && (
+            <div>
+              <h3 className="text-lg font-semibold mb-4">
+                Hasil Pertandingan - {competitionSubTab.toUpperCase()}
+              </h3>
+              <ResultsView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
+            </div>
+          )}
         </div>
       )}
 
