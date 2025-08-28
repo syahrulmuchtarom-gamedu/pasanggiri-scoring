@@ -27,9 +27,11 @@ export default function RankingView({ kelas }: Props) {
 
   const fetchResults = async () => {
     try {
-      // Get all completed competitions with scores
+      console.log('Fetching results for:', { kelas, selectedGolongan, selectedKategori });
+      
+      // Get all competitions with scores (remove COMPLETED filter for now)
       const [competitionsRes, scoresRes] = await Promise.all([
-        fetch(`/api/competitions?kelas=${kelas}&status=COMPLETED`),
+        fetch(`/api/competitions?kelas=${kelas}`),
         fetch('/api/scores')
       ]);
 
@@ -40,7 +42,8 @@ export default function RankingView({ kelas }: Props) {
       const competitions = await competitionsRes.json();
       const scores = await scoresRes.json();
       
-
+      console.log('Competitions:', competitions);
+      console.log('Scores:', scores);
 
       // Group by desa, golongan, kelas
       const desaResults: Record<string, DesaResult> = {};
@@ -66,6 +69,7 @@ export default function RankingView({ kelas }: Props) {
         const competitionScores = scores.filter((score: any) => score.competition_id === comp.id);
         const totalScore = competitionScores.reduce((sum: number, score: any) => sum + score.total_score, 0);
         
+        console.log(`Competition ${comp.desa}-${comp.kategori}: ${competitionScores.length} scores, total: ${totalScore}`);
         
         desaResults[key].categories[comp.kategori] = totalScore;
         desaResults[key].total_score += totalScore;
@@ -73,7 +77,7 @@ export default function RankingView({ kelas }: Props) {
 
       // Convert to array and sort by total score
       const sortedResults = Object.values(desaResults).sort((a, b) => b.total_score - a.total_score);
-
+      console.log('Final results:', sortedResults);
       setResults(sortedResults);
     } catch (error) {
       console.error('Error fetching results:', error);
