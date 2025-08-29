@@ -13,7 +13,6 @@ interface SidebarProps {
 
 const MENU_ITEMS = {
   SUPER_ADMIN: [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', shortcut: 'D' },
     { id: 'users', label: 'Manajemen User', icon: '👥', shortcut: 'U' },
     { id: 'competitions', label: 'Pertandingan', icon: '🥋', shortcut: 'C' },
     { id: 'details', label: 'Detail Penilaian', icon: '📋', shortcut: 'P' },
@@ -21,19 +20,20 @@ const MENU_ITEMS = {
     { id: 'system', label: 'Sistem', icon: '⚙️', shortcut: 'S' }
   ],
   ADMIN: [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', shortcut: 'D' },
-    { id: 'competitions', label: 'Pertandingan', icon: '🥋', shortcut: 'C' },
+    { id: 'overview', label: 'Dashboard', icon: '📊', shortcut: 'D' },
+    { id: 'competitions', label: 'Ranking', icon: '🥋', shortcut: 'C' },
     { id: 'details', label: 'Detail Penilaian', icon: '📋', shortcut: 'P' },
+    { id: 'users', label: 'User', icon: '👥', shortcut: 'U' },
     { id: 'logs', label: 'Log Aktivitas', icon: '📝', shortcut: 'L' }
   ],
   KOORDINATOR: [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', shortcut: 'D' },
-    { id: 'competitions', label: 'Pertandingan', icon: '🥋', shortcut: 'C' },
+    { id: 'overview', label: 'Dashboard', icon: '📊', shortcut: 'D' },
+    { id: 'competitions', label: 'Supervisi Sesi', icon: '🥋', shortcut: 'C' },
+    { id: 'results', label: 'Ranking', icon: '🏆', shortcut: 'R' },
     { id: 'details', label: 'Detail Penilaian', icon: '📋', shortcut: 'P' }
   ],
   SIRKULATOR: [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊', shortcut: 'D' },
-    { id: 'competitions', label: 'Kelola Sesi', icon: '🥋', shortcut: 'C' },
+    { id: 'control', label: 'Kontrol Sesi', icon: '🥋', shortcut: 'C' },
     { id: 'results', label: 'Hasil', icon: '🏆', shortcut: 'R' }
   ],
   JURI: [

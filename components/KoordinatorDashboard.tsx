@@ -7,10 +7,17 @@ import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
+  activeTab?: string;
 }
 
-export default function KoordinatorDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'results' | 'details'>('overview');
+export default function KoordinatorDashboard({ user, activeTab: externalActiveTab }: Props) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'results' | 'details'>(externalActiveTab as any || 'overview');
+  
+  useEffect(() => {
+    if (externalActiveTab) {
+      setActiveTab(externalActiveTab as any);
+    }
+  }, [externalActiveTab]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   
   const kelas = user.role === 'KOORDINATOR_PUTRA' ? 'PUTRA' : 'PUTRI';
@@ -55,48 +62,7 @@ export default function KoordinatorDashboard({ user }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex space-x-4 border-b dark:border-gray-700">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'overview'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab('competitions')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'competitions'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Supervisi Sesi
-        </button>
-        <button
-          onClick={() => setActiveTab('results')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'results'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Ranking
-        </button>
-        <button
-          onClick={() => setActiveTab('details')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'details'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Detail Penilaian
-        </button>
-      </div>
+
 
       {activeTab === 'overview' && (
         <div className="space-y-6">

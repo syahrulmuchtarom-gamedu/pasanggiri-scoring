@@ -15,7 +15,17 @@ import { useKeyboardShortcuts, COMMON_SHORTCUTS } from '@/hooks/useKeyboardShort
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const getDefaultTab = (userRole: string) => {
+    if (userRole === 'SUPER_ADMIN') return 'users';
+    if (userRole === 'ADMIN') return 'overview';
+    if (userRole.includes('KOORDINATOR')) return 'overview';
+    if (userRole.includes('SIRKULATOR')) return 'control';
+    if (userRole.includes('JURI')) return 'scoring';
+    if (userRole === 'VIEWER') return 'results';
+    return 'users';
+  };
+  
+  const [activeTab, setActiveTab] = useState('users'); // Will be updated when user loads
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const router = useRouter();
@@ -30,6 +40,7 @@ export default function DashboardPage() {
     try {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
+      setActiveTab(getDefaultTab(parsedUser.role));
     } catch (error) {
       router.push('/auth/login');
     } finally {
@@ -50,8 +61,8 @@ export default function DashboardPage() {
     },
     {
       key: 'd',
-      action: () => setActiveTab('dashboard'),
-      description: 'Go to dashboard'
+      action: () => setActiveTab('users'),
+      description: 'Go to users'
     },
     {
       key: 'u',
@@ -70,7 +81,7 @@ export default function DashboardPage() {
     }
     if (user?.role.includes('SIRKULATOR')) {
       return [
-        { id: 'create', label: 'New Session', icon: '➕', action: () => setActiveTab('competitions') },
+        { id: 'create', label: 'New Session', icon: '➕', action: () => setActiveTab('control') },
         { id: 'results', label: 'Results', icon: '🏆', action: () => setActiveTab('results') }
       ];
     }
@@ -98,16 +109,16 @@ export default function DashboardPage() {
         />
         <div className="flex-1 ml-64">
           <main className="p-6">
-            {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} />}
-            {user.role === 'ADMIN' && <AdminDashboard user={user} />}
+            {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} activeTab={activeTab} />}
+            {user.role === 'ADMIN' && <AdminDashboard user={user} activeTab={activeTab} />}
             {(user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') && (
-              <KoordinatorDashboard user={user} />
+              <KoordinatorDashboard user={user} activeTab={activeTab} />
             )}
             {(user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') && (
-              <SirkulatorDashboard user={user} />
+              <SirkulatorDashboard user={user} activeTab={activeTab} />
             )}
-            {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} />}
-            {user.role === 'VIEWER' && <ViewerDashboard user={user} />}
+            {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} activeTab={activeTab} />}
+            {user.role === 'VIEWER' && <ViewerDashboard user={user} activeTab={activeTab} />}
           </main>
         </div>
       </div>
@@ -135,16 +146,16 @@ export default function DashboardPage() {
         </header>
         
         <main className="p-4">
-          {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} />}
-          {user.role === 'ADMIN' && <AdminDashboard user={user} />}
+          {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} activeTab={activeTab} />}
+          {user.role === 'ADMIN' && <AdminDashboard user={user} activeTab={activeTab} />}
           {(user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') && (
-            <KoordinatorDashboard user={user} />
+            <KoordinatorDashboard user={user} activeTab={activeTab} />
           )}
           {(user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') && (
-            <SirkulatorDashboard user={user} />
+            <SirkulatorDashboard user={user} activeTab={activeTab} />
           )}
-          {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} />}
-          {user.role === 'VIEWER' && <ViewerDashboard user={user} />}
+          {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} activeTab={activeTab} />}
+          {user.role === 'VIEWER' && <ViewerDashboard user={user} activeTab={activeTab} />}
         </main>
         
         <FloatingActionButton actions={getFABActions()} />

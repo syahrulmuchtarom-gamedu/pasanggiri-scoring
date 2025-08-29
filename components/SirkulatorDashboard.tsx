@@ -6,10 +6,17 @@ import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
+  activeTab?: string;
 }
 
-export default function SirkulatorDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'control' | 'results'>('control');
+export default function SirkulatorDashboard({ user, activeTab: externalActiveTab }: Props) {
+  const [activeTab, setActiveTab] = useState<'control' | 'results'>(externalActiveTab as any || 'control');
+  
+  useEffect(() => {
+    if (externalActiveTab) {
+      setActiveTab(externalActiveTab as any);
+    }
+  }, [externalActiveTab]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [creatingCompetition, setCreatingCompetition] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -133,28 +140,7 @@ export default function SirkulatorDashboard({ user }: Props) {
           {toastMessage}
         </div>
       )}
-      <div className="flex space-x-4 border-b dark:border-gray-700">
-        <button
-          onClick={() => setActiveTab('control')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'control'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Kontrol Pertandingan
-        </button>
-        <button
-          onClick={() => setActiveTab('results')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'results'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Hasil Pertandingan
-        </button>
-      </div>
+
 
       {activeTab === 'control' && (
         <div className="space-y-6">

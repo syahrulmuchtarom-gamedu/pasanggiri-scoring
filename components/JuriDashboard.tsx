@@ -6,9 +6,10 @@ import ScoringForm from './ScoringForm';
 
 interface Props {
   user: User;
+  activeTab?: string;
 }
 
-export default function JuriDashboard({ user }: Props) {
+export default function JuriDashboard({ user, activeTab }: Props) {
   const [activeCompetitions, setActiveCompetitions] = useState<Competition[]>([]);
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,10 +74,14 @@ export default function JuriDashboard({ user }: Props) {
     );
   }
 
+  // Show scoring form if activeTab is 'scoring' or no activeTab specified
+  const showScoringList = !activeTab || activeTab === 'scoring';
+  
   return (
     <div className="space-y-6">
-      <div className="card">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Pertandingan Aktif - {kelas}</h2>
+      {showScoringList && (
+        <div className="card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Pertandingan Aktif - {kelas}</h2>
         
         {activeCompetitions.length === 0 ? (
           <div className="text-center py-8">
@@ -114,7 +119,15 @@ export default function JuriDashboard({ user }: Props) {
             ))}
           </div>
         )}
-      </div>
+        </div>
+      )}
+      
+      {activeTab === 'history' && (
+        <div className="card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Riwayat Penilaian - {kelas}</h2>
+          <p className="text-gray-500 dark:text-gray-400">Fitur riwayat penilaian akan segera hadir</p>
+        </div>
+      )}
     </div>
   );
 }
