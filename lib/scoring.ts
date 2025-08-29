@@ -26,7 +26,7 @@ export function calculateFinalScore(scores: any[]): number {
   
   if (scores.length === 4) {
     // If 4 scores, remove only the highest, use the remaining 3
-    return sortedScores.slice(0, -1).reduce((sum, score) => sum + score, 0);
+    return sortedScores.slice(0, 3).reduce((sum, score) => sum + score, 0);
   }
   
   // If 5 or more scores, remove highest and lowest, use middle values
@@ -83,8 +83,8 @@ export function getScoringDetails(scores: any[]): {
   
   if (scores.length === 4) {
     return {
-      usedScores: sortedScores.slice(0, -1),
-      discardedScores: [sortedScores[sortedScores.length - 1]],
+      usedScores: sortedScores.slice(0, 3),
+      discardedScores: [sortedScores[3]],
       finalScore: calculateFinalScore(scores),
       method: 'Highest score discarded, 3 lowest used'
     };
@@ -101,7 +101,7 @@ export function getScoringDetails(scores: any[]): {
     usedScores = middleScores;
   }
   
-  const discardedScores = sortedScores.filter(score => !usedScores.includes(score));
+  const discardedScores = allScores.filter(score => !usedScores.includes(score));
   
   return {
     usedScores,

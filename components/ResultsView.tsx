@@ -123,7 +123,7 @@ export default function ResultsView({ kelas }: Props) {
 
       {Object.keys(groupedResults).length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-500 dark:text-gray-400">Belum ada hasil pertandingan untuk kelas {kelas}</p>
+          <p className="text-gray-500">Belum ada hasil pertandingan untuk kelas {kelas}</p>
         </div>
       ) : (
         <div className="space-y-8">
@@ -131,23 +131,23 @@ export default function ResultsView({ kelas }: Props) {
             const [golongan, kategori] = key.split('-');
             return (
               <div key={key} className="card">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+                <h3 className="text-lg font-semibold mb-4">
                   {golongan} - {kategori} ({kelas})
                 </h3>
                 
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="border-b dark:border-gray-700">
-                        <th className="text-left py-2 text-gray-900 dark:text-white">Ranking</th>
-                        <th className="text-left py-2 text-gray-900 dark:text-white">Desa</th>
-                        <th className="text-center py-2 text-gray-900 dark:text-white">Detail Penilaian</th>
-                        <th className="text-center py-2 text-gray-900 dark:text-white">Status</th>
+                      <tr className="border-b">
+                        <th className="text-left py-2">Ranking</th>
+                        <th className="text-left py-2">Desa</th>
+                        <th className="text-center py-2">Detail Penilaian</th>
+                        <th className="text-center py-2">Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       {results.map((result, index) => (
-                        <tr key={result.competition.id} className="border-b dark:border-gray-700">
+                        <tr key={result.competition.id} className="border-b">
                           <td className="py-2">
                             <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold ${
                               index === 0 ? 'bg-yellow-500' :
@@ -158,7 +158,7 @@ export default function ResultsView({ kelas }: Props) {
                               {index + 1}
                             </span>
                           </td>
-                          <td className="py-2 font-medium text-gray-900 dark:text-gray-100">{result.competition.desa}</td>
+                          <td className="py-2 font-medium">{result.competition.desa}</td>
                           <td className="py-2">
                             <ScoringDetails scores={result.scores} showDetails={true} />
                           </td>

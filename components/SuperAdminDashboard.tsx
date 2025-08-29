@@ -4,22 +4,14 @@ import { useState, useEffect } from 'react';
 import { User, ActivityLog, DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
 import ResultsView from './ResultsView';
 import RankingView from './RankingView';
-import JuaraUmumGabungan from './JuaraUmumGabungan';
 
 interface Props {
   user: User;
-  activeTab?: string;
 }
 
-export default function SuperAdminDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'details' | 'logs' | 'system'>(externalActiveTab as any || 'users');
-  
-  useEffect(() => {
-    if (externalActiveTab) {
-      setActiveTab(externalActiveTab as any);
-    }
-  }, [externalActiveTab]);
-  const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri' | 'juara_umum'>('putra');
+export default function SuperAdminDashboard({ user }: Props) {
+  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'details' | 'logs' | 'system'>('users');
+  const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri'>('putra');
   const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -497,12 +489,63 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
           {toastMessage}
         </div>
       )}
-
+      <div className="flex space-x-4 border-b">
+        <button
+          onClick={() => setActiveTab('users')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'users'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Manajemen User
+        </button>
+        <button
+          onClick={() => setActiveTab('competitions')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'competitions'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Pertandingan
+        </button>
+        <button
+          onClick={() => setActiveTab('details')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'details'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Detail Penilaian
+        </button>
+        <button
+          onClick={() => setActiveTab('logs')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'logs'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Log Aktivitas
+        </button>
+        <button
+          onClick={() => setActiveTab('system')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'system'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Sistem
+        </button>
+      </div>
 
       {activeTab === 'users' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Manajemen User</h2>
+            <h2 className="text-xl font-semibold">Manajemen User</h2>
             <button
               onClick={() => setShowCreateUser(true)}
               className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
@@ -620,19 +663,19 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b dark:border-gray-700">
-                    <th className="text-left py-2 text-gray-900 dark:text-white">Username</th>
-                    <th className="text-left py-2 text-gray-900 dark:text-white">Role</th>
-                    <th className="text-left py-2 text-gray-900 dark:text-white">Status</th>
-                    <th className="text-left py-2 text-gray-900 dark:text-white">Dibuat</th>
-                    <th className="text-left py-2 text-gray-900 dark:text-white">Aksi</th>
+                  <tr className="border-b">
+                    <th className="text-left py-2">Username</th>
+                    <th className="text-left py-2">Role</th>
+                    <th className="text-left py-2">Status</th>
+                    <th className="text-left py-2">Dibuat</th>
+                    <th className="text-left py-2">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map(u => (
-                    <tr key={u.id} className="border-b dark:border-gray-700">
-                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.username}</td>
-                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.role}</td>
+                    <tr key={u.id} className="border-b">
+                      <td className="py-2">{u.username}</td>
+                      <td className="py-2">{u.role}</td>
                       <td className="py-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           u.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -640,7 +683,7 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
                           {u.is_active ? 'Aktif' : 'Nonaktif'}
                         </span>
                       </td>
-                      <td className="py-2 text-gray-900 dark:text-gray-100">{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td className="py-2">{new Date(u.created_at).toLocaleDateString()}</td>
                       <td className="py-2">
                         <div className="flex space-x-1">
                           <button
@@ -708,16 +751,6 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
             >
               KELAS PUTRI
             </button>
-            <button
-              onClick={() => setCompetitionSubTab('juara_umum')}
-              className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-                competitionSubTab === 'juara_umum'
-                  ? 'border-yellow-500 text-yellow-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              🏆 JUARA UMUM
-            </button>
           </div>
 
           {/* Competition View Tabs */}
@@ -744,7 +777,7 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
             </button>
           </div>
 
-          {competitionView === 'control' && competitionSubTab !== 'juara_umum' && (
+          {competitionView === 'control' && (
             <div className="space-y-6">
               <div className="card">
                 <h3 className="text-lg font-semibold mb-4">
@@ -838,37 +871,10 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
 
           {competitionView === 'results' && (
             <div>
-              {competitionSubTab === 'juara_umum' ? (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">
-                    🏆 JUARA UMUM GABUNGAN (PUTRA + PUTRI)
-                  </h3>
-                  <JuaraUmumGabungan />
-                </div>
-              ) : (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">
-                    Ranking & Hasil - {competitionSubTab.toUpperCase()}
-                  </h3>
-                  <RankingView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
-                </div>
-              )}
-            </div>
-          )}
-          
-          {competitionView === 'control' && competitionSubTab === 'juara_umum' && (
-            <div className="card">
-              <div className="text-center py-8">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                  🏆 JUARA UMUM GABUNGAN
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Juara Umum dihitung otomatis berdasarkan gabungan nilai PUTRA + PUTRI dari semua sesi yang telah selesai.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">
-                  Silakan lihat tab "Hasil Pertandingan" untuk melihat ranking Juara Umum.
-                </p>
-              </div>
+              <h3 className="text-lg font-semibold mb-4">
+                Ranking & Hasil - {competitionSubTab.toUpperCase()}
+              </h3>
+              <RankingView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
             </div>
           )}
         </div>
