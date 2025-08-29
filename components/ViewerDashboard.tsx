@@ -32,7 +32,7 @@ export default function ViewerDashboard({ user, activeTab: externalActiveTab }: 
               {showRanking ? 'Ranking' : 'Hasil'} PUTRA
             </button>
             <button
-              onClick={() => setSelectedTab('putri'))
+              onClick={() => setSelectedTab('putri')}
               className={`pb-2 px-1 border-b-2 font-medium text-sm ${
                 selectedTab === 'putri'
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
