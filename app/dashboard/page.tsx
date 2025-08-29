@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const router = useRouter();
 
@@ -86,18 +87,54 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
-      <Sidebar 
-        user={user} 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-        onLogout={handleLogout} 
-      />
-      
-      {/* Main Content */}
-      <div className="flex-1 ml-64 transition-all duration-300">
-        <main className="p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Desktop: Sidebar + Content */}
+      <div className="hidden lg:flex">
+        <Sidebar 
+          user={user} 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+          onLogout={handleLogout} 
+        />
+        <div className="flex-1 ml-64">
+          <main className="p-6">
+            {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} />}
+            {user.role === 'ADMIN' && <AdminDashboard user={user} />}
+            {(user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') && (
+              <KoordinatorDashboard user={user} />
+            )}
+            {(user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') && (
+              <SirkulatorDashboard user={user} />
+            )}
+            {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} />}
+            {user.role === 'VIEWER' && <ViewerDashboard user={user} />}
+          </main>
+        </div>
+      </div>
+
+      {/* Mobile: Header + Content + FAB */}
+      <div className="lg:hidden">
+        <header className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700 sticky top-0 z-40">
+          <div className="px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <img src="/images/logo.png" alt="Logo" className="h-8 w-8" />
+                <div>
+                  <h1 className="font-bold text-lg text-gray-900 dark:text-white">PASANGGIRI</h1>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{user.username} - {user.role}</p>
+                </div>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="text-red-600 dark:text-red-400 text-sm font-medium"
+              >
+                Keluar
+              </button>
+            </div>
+          </div>
+        </header>
+        
+        <main className="p-4">
           {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} />}
           {user.role === 'ADMIN' && <AdminDashboard user={user} />}
           {(user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') && (
@@ -109,6 +146,8 @@ export default function DashboardPage() {
           {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && <JuriDashboard user={user} />}
           {user.role === 'VIEWER' && <ViewerDashboard user={user} />}
         </main>
+        
+        <FloatingActionButton actions={getFABActions()} />
       </div>
 
       {/* Command Palette */}
@@ -117,11 +156,6 @@ export default function DashboardPage() {
         onClose={() => setCommandPaletteOpen(false)}
         onNavigate={setActiveTab}
       />
-
-      {/* Floating Action Button (Mobile) */}
-      <div className="lg:hidden">
-        <FloatingActionButton actions={getFABActions()} />
-      </div>
     </div>
   );
 }
