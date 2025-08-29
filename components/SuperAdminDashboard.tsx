@@ -7,10 +7,17 @@ import RankingView from './RankingView';
 
 interface Props {
   user: User;
+  activeTab?: string;
 }
 
-export default function SuperAdminDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'details' | 'logs' | 'system'>('users');
+export default function SuperAdminDashboard({ user, activeTab: externalActiveTab }: Props) {
+  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'details' | 'logs' | 'system'>(externalActiveTab as any || 'users');
+  
+  useEffect(() => {
+    if (externalActiveTab) {
+      setActiveTab(externalActiveTab as any);
+    }
+  }, [externalActiveTab]);
   const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri'>('putra');
   const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
   const [users, setUsers] = useState<User[]>([]);
@@ -489,58 +496,7 @@ export default function SuperAdminDashboard({ user }: Props) {
           {toastMessage}
         </div>
       )}
-      <div className="flex space-x-4 border-b dark:border-gray-700">
-        <button
-          onClick={() => setActiveTab('users')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'users'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-          }`}
-        >
-          Manajemen User
-        </button>
-        <button
-          onClick={() => setActiveTab('competitions')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'competitions'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Pertandingan
-        </button>
-        <button
-          onClick={() => setActiveTab('details')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'details'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Detail Penilaian
-        </button>
-        <button
-          onClick={() => setActiveTab('logs')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'logs'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Log Aktivitas
-        </button>
-        <button
-          onClick={() => setActiveTab('system')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'system'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Sistem
-        </button>
-      </div>
+
 
       {activeTab === 'users' && (
         <div className="space-y-6">
