@@ -55,9 +55,16 @@ export default function DashboardPage() {
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">PASANGGIRI</h1>
-              <p className="text-sm text-gray-600">{user.username} - {user.role}</p>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/images/logo.png" 
+                alt="Logo Pasanggiri" 
+                className="h-10 w-10 object-contain"
+              />
+              <div>
+                <h1 className="text-xl font-semibold text-gray-900">PASANGGIRI</h1>
+                <p className="text-sm text-gray-600">{user.username} - {user.role}</p>
+              </div>
             </div>
             <button
               onClick={handleLogout}

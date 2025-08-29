@@ -40,7 +40,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="card max-w-md w-full">
-        <h1 className="text-2xl font-bold text-center mb-6">Login Sistem</h1>
+        <div className="flex flex-col items-center mb-6">
+          <img 
+            src="/images/logo.png" 
+            alt="Logo Pasanggiri" 
+            className="h-16 w-16 object-contain mb-4"
+          />
+          <h1 className="text-2xl font-bold text-center">Login Sistem</h1>
+        </div>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
