@@ -38,15 +38,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="card max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
+      <div className="card max-w-md w-full bg-white dark:bg-gray-800 border dark:border-gray-700">
         <div className="flex flex-col items-center mb-6">
           <img 
             src="/images/logo.png" 
             alt="Logo Pasanggiri" 
             className="h-16 w-16 object-contain mb-4"
           />
-          <h1 className="text-2xl font-bold text-center">Login Sistem</h1>
+          <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Login Sistem</h1>
         </div>
         
         {error && (
@@ -57,7 +57,7 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Username</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Username</label>
             <input
               type="text"
               value={username}
@@ -69,7 +69,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               value={password}

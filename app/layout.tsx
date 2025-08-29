@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 export const metadata: Metadata = {
   title: 'Pasanggiri - Sistem Penilaian Pencak Silat',
@@ -16,9 +17,11 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body>
-        <div className="min-h-screen bg-gray-50">
-          {children}
-        </div>
+        <ThemeProvider>
+          <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {children}
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

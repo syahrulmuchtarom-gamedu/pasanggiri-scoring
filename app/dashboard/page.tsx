@@ -9,6 +9,7 @@ import SuperAdminDashboard from '@/components/SuperAdminDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
 import KoordinatorDashboard from '@/components/KoordinatorDashboard';
 import ViewerDashboard from '@/components/ViewerDashboard';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -51,8 +52,8 @@ export default function DashboardPage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <header className="bg-white dark:bg-gray-800 shadow-sm border-b dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
@@ -62,16 +63,19 @@ export default function DashboardPage() {
                 className="h-10 w-10 object-contain"
               />
               <div>
-                <h1 className="text-xl font-semibold text-gray-900">PASANGGIRI</h1>
-                <p className="text-sm text-gray-600">{user.username} - {user.role}</p>
+                <h1 className="text-xl font-semibold text-gray-900 dark:text-white">PASANGGIRI</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-300">{user.username} - {user.role}</p>
               </div>
             </div>
-            <button
-              onClick={handleLogout}
-              className="btn-secondary text-sm"
-            >
-              Keluar
-            </button>
+            <div className="flex items-center space-x-3">
+              <ThemeToggle />
+              <button
+                onClick={handleLogout}
+                className="btn-secondary text-sm"
+              >
+                Keluar
+              </button>
+            </div>
           </div>
         </div>
       </header>
