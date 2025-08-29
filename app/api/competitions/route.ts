@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { desa, kelas, golongan, kategori } = await request.json();
@@ -33,9 +35,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const kelas = searchParams.get('kelas');
+    const status = request.nextUrl.searchParams.get('status');
+    const kelas = request.nextUrl.searchParams.get('kelas');
 
     let query = supabaseAdmin.from('competitions').select('*');
     
@@ -63,8 +64,7 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+    const id = request.nextUrl.searchParams.get('id');
 
     if (!id) {
       return NextResponse.json(

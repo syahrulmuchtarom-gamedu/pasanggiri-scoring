@@ -6,10 +6,17 @@ import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
+  activeTab?: string;
 }
 
-export default function SirkulatorDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'control' | 'results'>('control');
+export default function SirkulatorDashboard({ user, activeTab: externalActiveTab }: Props) {
+  const [activeTab, setActiveTab] = useState<'control' | 'results'>(externalActiveTab as any || 'control');
+  
+  useEffect(() => {
+    if (externalActiveTab) {
+      setActiveTab(externalActiveTab as any);
+    }
+  }, [externalActiveTab]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [creatingCompetition, setCreatingCompetition] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -133,42 +140,21 @@ export default function SirkulatorDashboard({ user }: Props) {
           {toastMessage}
         </div>
       )}
-      <div className="flex space-x-4 border-b">
-        <button
-          onClick={() => setActiveTab('control')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'control'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Kontrol Pertandingan
-        </button>
-        <button
-          onClick={() => setActiveTab('results')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'results'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Hasil Pertandingan
-        </button>
-      </div>
+
 
       {activeTab === 'control' && (
         <div className="space-y-6">
           <div className="card">
-            <h2 className="text-lg font-semibold mb-4">Buat Sesi Pertandingan Baru - {kelas}</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Buat Sesi Pertandingan Baru - {kelas}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {DESA_LIST.map(desa => (
-                <div key={desa} className="border rounded-lg p-4">
-                  <h3 className="font-medium mb-3">{desa}</h3>
+                <div key={desa} className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4">
+                  <h3 className="font-medium mb-3 text-gray-900 dark:text-white">{desa}</h3>
                   
                   {GOLONGAN_LIST.map(golongan => (
                     <div key={golongan} className="mb-3">
-                      <p className="text-sm font-medium text-gray-600 mb-2">{golongan}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{golongan}</p>
                       <div className="grid grid-cols-2 gap-2">
                         {KATEGORI_LIST.map(kategori => {
                           const isCreated = isCompetitionCreated(desa, golongan, kategori);
@@ -181,10 +167,10 @@ export default function SirkulatorDashboard({ user }: Props) {
                               disabled={isCreated || isCreating}
                               className={`text-xs px-2 py-1 rounded font-medium transition-all duration-200 ${
                                 isCreated 
-                                  ? 'bg-green-100 text-green-800 cursor-not-allowed'
+                                  ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 cursor-not-allowed'
                                   : isCreating
-                                  ? 'bg-yellow-100 text-yellow-800 cursor-wait'
-                                  : 'bg-primary-100 hover:bg-primary-200 text-primary-700 hover:shadow-sm'
+                                  ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 cursor-wait'
+                                  : 'bg-primary-100 dark:bg-primary-900 hover:bg-primary-200 dark:hover:bg-primary-800 text-primary-700 dark:text-primary-300 hover:shadow-sm'
                               }`}
                             >
                               {isCreated ? '✅ CREATED' : isCreating ? '⏳ Creating...' : kategori}
@@ -200,23 +186,23 @@ export default function SirkulatorDashboard({ user }: Props) {
           </div>
 
           <div className="card">
-            <h2 className="text-lg font-semibold mb-4">Sesi Aktif</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Sesi Aktif</h2>
             
             {competitions.length === 0 ? (
-              <p className="text-gray-500">Belum ada sesi pertandingan</p>
+              <p className="text-gray-500 dark:text-gray-400">Belum ada sesi pertandingan</p>
             ) : (
               <div className="space-y-3">
                 {competitions.map(competition => (
-                  <div key={competition.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={competition.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
                     <div>
-                      <p className="font-medium">{competition.desa} - {competition.kategori}</p>
-                      <p className="text-sm text-gray-600">{competition.golongan} {competition.kelas}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{competition.desa} - {competition.kategori}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{competition.golongan} {competition.kelas}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 rounded-full text-xs ${
                         competition.status === 'ACTIVE' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300' 
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
                       }`}>
                         {competition.status}
                       </span>
@@ -243,7 +229,7 @@ export default function SirkulatorDashboard({ user }: Props) {
 
       {activeTab === 'results' && (
         <div>
-          <h2 className="text-xl font-semibold mb-6">Hasil Pertandingan - {kelas}</h2>
+          <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Hasil Pertandingan - {kelas}</h2>
           <ResultsView kelas={kelas} />
         </div>
       )}

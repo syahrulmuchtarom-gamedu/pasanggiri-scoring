@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -38,26 +39,29 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="card max-w-md w-full">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <div className="card max-w-md w-full bg-white dark:bg-gray-800 border dark:border-gray-700 shadow-lg">
         <div className="flex flex-col items-center mb-6">
           <img 
             src="/images/logo.png" 
             alt="Logo Pasanggiri" 
             className="h-16 w-16 object-contain mb-4"
           />
-          <h1 className="text-2xl font-bold text-center">Login Sistem</h1>
+          <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">Login Sistem</h1>
         </div>
         
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Username</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Username</label>
             <input
               type="text"
               value={username}
@@ -69,7 +73,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               value={password}

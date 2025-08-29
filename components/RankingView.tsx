@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
 import { calculateFinalScore } from '@/lib/scoring';
 
+
 interface Props {
   kelas: 'PUTRA' | 'PUTRI';
 }
@@ -30,9 +31,9 @@ export default function RankingView({ kelas }: Props) {
     try {
       console.log('Fetching results for:', { kelas, selectedGolongan, selectedKategori });
       
-      // Get all competitions with scores (remove COMPLETED filter for now)
+      // Get all competitions with scores
       const [competitionsRes, scoresRes] = await Promise.all([
-        fetch(`/api/competitions?kelas=${kelas}`),
+        fetch(`/api/competitions?kelas=${kelas}&status=COMPLETED`),
         fetch('/api/scores')
       ]);
 
@@ -192,27 +193,30 @@ export default function RankingView({ kelas }: Props) {
     );
   }
 
+  // Removed JuaraUmumView from individual class results
+  // Juara Umum is now only available in the dedicated JUARA UMUM tab
+
   return (
     <div className="space-y-6">
       {/* Filters */}
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Filter Ranking</h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Filter Ranking</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Kelas</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Kelas</label>
             <input 
               type="text" 
               value={kelas} 
               disabled 
-              className="w-full px-3 py-2 border rounded bg-gray-100"
+              className="input-field bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Golongan</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Golongan</label>
             <select
               value={selectedGolongan}
               onChange={(e) => setSelectedGolongan(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
+              className="input-field"
             >
               <option value="ALL">Semua Golongan</option>
               {GOLONGAN_LIST.map(golongan => (
@@ -221,13 +225,13 @@ export default function RankingView({ kelas }: Props) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Kategori</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Kategori</label>
             <select
               value={selectedKategori}
               onChange={(e) => setSelectedKategori(e.target.value)}
-              className="w-full px-3 py-2 border rounded"
+              className="input-field"
             >
-              <option value="ALL">Juara Umum</option>
+              <option value="ALL">Semua Kategori</option>
               {KATEGORI_LIST.map(kategori => (
                 <option key={kategori} value={kategori}>{kategori}</option>
               ))}
@@ -253,46 +257,46 @@ export default function RankingView({ kelas }: Props) {
 
       {/* Results Table */}
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4">
-          Ranking {selectedKategori === 'ALL' ? 'Juara Umum' : selectedKategori} - {kelas}
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
+          Ranking {selectedKategori === 'ALL' ? 'Semua Kategori' : selectedKategori} - {kelas}
           {selectedGolongan !== 'ALL' && ` - ${selectedGolongan}`}
         </h3>
         
         {results.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500">Belum ada hasil untuk filter yang dipilih</p>
+            <p className="text-gray-500 dark:text-gray-400">Belum ada hasil untuk filter yang dipilih</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse border">
+            <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
               <thead>
-                <tr className="bg-gray-50">
-                  <th className="border px-4 py-2 text-left">Rank</th>
-                  <th className="border px-4 py-2 text-left">Desa</th>
-                  <th className="border px-4 py-2 text-left">Golongan</th>
+                <tr className="bg-gray-50 dark:bg-gray-700">
+                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Rank</th>
+                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Desa</th>
+                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Golongan</th>
                   {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
-                    <th key={kategori} className="border px-4 py-2 text-center">{kategori}</th>
+                    <th key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">{kategori}</th>
                   ))}
-                  <th className="border px-4 py-2 text-center">Total</th>
+                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">Total</th>
                 </tr>
               </thead>
               <tbody>
                 {results.map((result, index) => (
-                  <tr key={`${result.desa}-${result.golongan}`} className={index < 3 ? 'bg-yellow-50' : ''}>
-                    <td className="border px-4 py-2 font-bold">
+                  <tr key={`${result.desa}-${result.golongan}`} className={index < 3 ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-white dark:bg-gray-800'}>
+                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-bold text-gray-900 dark:text-white">
                       {index + 1}
                       {index === 0 && ' 🥇'}
                       {index === 1 && ' 🥈'}
                       {index === 2 && ' 🥉'}
                     </td>
-                    <td className="border px-4 py-2 font-medium">{result.desa}</td>
-                    <td className="border px-4 py-2">{result.golongan}</td>
+                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium text-gray-900 dark:text-white">{result.desa}</td>
+                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-white">{result.golongan}</td>
                     {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
-                      <td key={kategori} className="border px-4 py-2 text-center">
+                      <td key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">
                         {result.categories[kategori] || '-'}
                       </td>
                     ))}
-                    <td className="border px-4 py-2 text-center font-bold text-primary-600">
+                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-bold text-primary-600 dark:text-primary-400">
                       {result.total_score}
                     </td>
                   </tr>

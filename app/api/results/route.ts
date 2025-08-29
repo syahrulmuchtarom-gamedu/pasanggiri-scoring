@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { calculateFinalScore } from '@/lib/scoring';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const kelas = searchParams.get('kelas');
-    const golongan = searchParams.get('golongan');
-    const kategori = searchParams.get('kategori');
+    const kelas = request.nextUrl.searchParams.get('kelas');
+    const golongan = request.nextUrl.searchParams.get('golongan');
+    const kategori = request.nextUrl.searchParams.get('kategori');
 
     // Get competitions
     let competitionsQuery = supabaseAdmin

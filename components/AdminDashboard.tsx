@@ -7,10 +7,17 @@ import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
+  activeTab?: string;
 }
 
-export default function AdminDashboard({ user }: Props) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'details' | 'users' | 'logs'>('overview');
+export default function AdminDashboard({ user, activeTab: externalActiveTab }: Props) {
+  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'details' | 'users' | 'logs'>(externalActiveTab as any || 'overview');
+  
+  useEffect(() => {
+    if (externalActiveTab) {
+      setActiveTab(externalActiveTab as any);
+    }
+  }, [externalActiveTab]);
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -79,96 +86,45 @@ export default function AdminDashboard({ user }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex space-x-4 border-b">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'overview'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab('competitions')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'competitions'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Ranking
-        </button>
-        <button
-          onClick={() => setActiveTab('details')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'details'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Detail Penilaian
-        </button>
-        <button
-          onClick={() => setActiveTab('users')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'users'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          User
-        </button>
-        <button
-          onClick={() => setActiveTab('logs')}
-          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-            activeTab === 'logs'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Log Aktivitas
-        </button>
-      </div>
+
 
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Dashboard Admin</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Dashboard Admin</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Total User</h3>
-              <p className="text-3xl font-bold text-primary-600">{users.length}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total User</h3>
+              <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">{users.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Sesi Aktif</h3>
-              <p className="text-3xl font-bold text-green-600">{activeCompetitions.length}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Aktif</h3>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">{activeCompetitions.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Sesi Selesai</h3>
-              <p className="text-3xl font-bold text-blue-600">{completedCompetitions.length}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Selesai</h3>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{completedCompetitions.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Total Sesi</h3>
-              <p className="text-3xl font-bold text-gray-600">{competitions.length}</p>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Sesi</h3>
+              <p className="text-3xl font-bold text-gray-600 dark:text-gray-400">{competitions.length}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="card">
-              <h3 className="text-lg font-medium mb-4">Sesi Aktif</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Sesi Aktif</h3>
               {activeCompetitions.length === 0 ? (
-                <p className="text-gray-500">Tidak ada sesi aktif</p>
+                <p className="text-gray-500 dark:text-gray-400">Tidak ada sesi aktif</p>
               ) : (
                 <div className="space-y-2">
                   {activeCompetitions.slice(0, 5).map(comp => (
-                    <div key={comp.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                    <div key={comp.id} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
                       <div>
-                        <p className="font-medium">{comp.desa} - {comp.kategori}</p>
-                        <p className="text-sm text-gray-600">{comp.golongan} {comp.kelas}</p>
+                        <p className="font-medium text-gray-900 dark:text-white">{comp.desa} - {comp.kategori}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{comp.golongan} {comp.kelas}</p>
                       </div>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1 rounded-full text-xs">
                         AKTIF
                       </span>
                     </div>
@@ -178,12 +134,12 @@ export default function AdminDashboard({ user }: Props) {
             </div>
 
             <div className="card">
-              <h3 className="text-lg font-medium mb-4">Aktivitas Terbaru</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Aktivitas Terbaru</h3>
               <div className="space-y-2">
                 {logs.slice(0, 5).map(log => (
-                  <div key={log.id} className="p-2 bg-gray-50 rounded">
-                    <p className="text-sm font-medium">{log.action}</p>
-                    <p className="text-xs text-gray-600">{log.username} - {new Date(log.created_at).toLocaleString()}</p>
+                  <div key={log.id} className="p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{log.action}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">{log.username} - {new Date(log.created_at).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
@@ -194,15 +150,15 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'competitions' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Ranking Pertandingan</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Ranking Pertandingan</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Ranking PUTRA</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Ranking PUTRA</h3>
               <RankingView kelas="PUTRA" />
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-4">Ranking PUTRI</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Ranking PUTRI</h3>
               <RankingView kelas="PUTRI" />
             </div>
           </div>
@@ -211,15 +167,15 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'details' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Detail Penilaian</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Detail Penilaian</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRA</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Detail Penilaian PUTRA</h3>
               <ResultsView kelas="PUTRA" />
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRI</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Detail Penilaian PUTRI</h3>
               <ResultsView kelas="PUTRI" />
             </div>
           </div>
@@ -228,23 +184,23 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'users' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Manajemen User</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Manajemen User</h2>
           <div className="card">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Username</th>
-                    <th className="text-left py-2">Role</th>
-                    <th className="text-left py-2">Status</th>
-                    <th className="text-left py-2">Aksi</th>
+                  <tr className="border-b dark:border-gray-700">
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Username</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Role</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Status</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map(u => (
-                    <tr key={u.id} className="border-b">
-                      <td className="py-2">{u.username}</td>
-                      <td className="py-2">{u.role}</td>
+                    <tr key={u.id} className="border-b dark:border-gray-700">
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.username}</td>
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.role}</td>
                       <td className="py-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           u.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -275,18 +231,18 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'logs' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Log Aktivitas</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Log Aktivitas</h2>
           <div className="card">
             <div className="space-y-3">
               {logs.map(log => (
                 <div key={log.id} className="border-b pb-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium">{log.action}</p>
-                      <p className="text-sm text-gray-600">{log.details}</p>
-                      <p className="text-xs text-gray-500">oleh: {log.username}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{log.action}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{log.details}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">oleh: {log.username}</p>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(log.created_at).toLocaleString()}
                     </span>
                   </div>

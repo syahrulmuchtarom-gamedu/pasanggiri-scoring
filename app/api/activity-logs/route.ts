@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const limit = searchParams.get('limit') || '50';
+    const limit = request.nextUrl.searchParams.get('limit') || '50';
 
     const { data, error } = await supabaseAdmin
       .from('activity_logs')
