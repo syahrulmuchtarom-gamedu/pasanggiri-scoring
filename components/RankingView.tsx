@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
 import { calculateFinalScore } from '@/lib/scoring';
+import JuaraUmumView from './JuaraUmumView';
 
 interface Props {
   kelas: 'PUTRA' | 'PUTRI';
@@ -192,6 +193,11 @@ export default function RankingView({ kelas }: Props) {
     );
   }
 
+  // Show Juara Umum if ALL filters are selected
+  if (selectedGolongan === 'ALL' && selectedKategori === 'ALL') {
+    return <JuaraUmumView kelas={kelas} />;
+  }
+
   return (
     <div className="space-y-6">
       {/* Filters */}
@@ -214,7 +220,7 @@ export default function RankingView({ kelas }: Props) {
               onChange={(e) => setSelectedGolongan(e.target.value)}
               className="input-field"
             >
-              <option value="ALL">Semua Golongan</option>
+              <option value="ALL">Semua Golongan (Juara Umum)</option>
               {GOLONGAN_LIST.map(golongan => (
                 <option key={golongan} value={golongan}>{golongan}</option>
               ))}
@@ -227,7 +233,7 @@ export default function RankingView({ kelas }: Props) {
               onChange={(e) => setSelectedKategori(e.target.value)}
               className="input-field"
             >
-              <option value="ALL">Juara Umum</option>
+              <option value="ALL">Semua Kategori (Juara Umum)</option>
               {KATEGORI_LIST.map(kategori => (
                 <option key={kategori} value={kategori}>{kategori}</option>
               ))}
