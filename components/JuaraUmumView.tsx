@@ -198,16 +198,7 @@ export default function JuaraUmumView({ kelas }: Props) {
           🏆 Juara Umum {kelas}
         </h3>
         
-        {results.filter(r => r.isComplete).length === 0 && results.length > 0 && (
-          <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
-            <div className="flex items-center space-x-2">
-              <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
-              <p className="text-yellow-800 dark:text-yellow-200 font-medium">
-                Tidak ada desa yang eligible untuk Juara Umum (belum ada yang lengkap 25 sesi)
-              </p>
-            </div>
-          </div>
-        )}
+
         
         <div className="overflow-x-auto">
           <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
@@ -221,15 +212,8 @@ export default function JuaraUmumView({ kelas }: Props) {
               </tr>
             </thead>
             <tbody>
-              {(() => {
-                // Pre-calculate complete participants once (performance optimization)
-                const completeParticipants = results.filter(r => r.isComplete);
-                
-                return results.map((result, index) => {
-                  const rankAmongComplete = result.isComplete 
-                    ? completeParticipants.findIndex(r => r.desa === result.desa) + 1 
-                    : 0;
-                  const isTopThree = result.isComplete && rankAmongComplete <= 3;
+              {results.map((result, index) => {
+                const isTopThree = index < 3;
                 
                 return (
                 <tr key={result.desa} className={
@@ -238,16 +222,10 @@ export default function JuaraUmumView({ kelas }: Props) {
                     : 'bg-gray-100 dark:bg-gray-700 opacity-60'
                 }>
                   <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-bold">
-                    {result.isComplete ? (
-                      <>
-                        {rankAmongComplete}
-                        {rankAmongComplete === 1 && ' 🥇'}
-                        {rankAmongComplete === 2 && ' 🥈'}
-                        {rankAmongComplete === 3 && ' 🥉'}
-                      </>
-                    ) : (
-                      '-'
-                    )}
+                    {index + 1}
+                    {index === 0 && ' 🥇'}
+                    {index === 1 && ' 🥈'}
+                    {index === 2 && ' 🥉'}
                   </td>
                   <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">
                     {result.desa}
@@ -259,28 +237,26 @@ export default function JuaraUmumView({ kelas }: Props) {
                     <span className={`px-2 py-1 rounded-full text-xs ${
                       result.isComplete 
                         ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
+                        : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {result.isComplete ? 'LENGKAP' : 'TIDAK LENGKAP'}
+                      {result.isComplete ? 'LENGKAP' : 'BERPARTISIPASI'}
                     </span>
                   </td>
                   <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-bold text-primary-600">
                     {result.totalScore}
                   </td>
                 </tr>
-                  );
-                });
-              })()}
+                );
+              })}
             </tbody>
           </table>
         </div>
         
         <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-          <p>🏆 <strong>Juara Umum:</strong> HANYA desa yang mengikuti SEMUA 25 sesi (5 golongan × 5 kategori)</p>
-          <p>📊 <strong>Perhitungan:</strong> Total poin dari semua sesi yang diikuti (middle 3 values per sesi)</p>
-          <p>⚠️ <strong>Syarat Mutlak:</strong> Desa harus lengkap 25 sesi untuk masuk ranking juara umum</p>
-          <p>📝 <strong>Referensi:</strong> Desa tidak lengkap ditampilkan sebagai informasi saja</p>
-          <p>🔢 <strong>Eligible:</strong> {results.filter(r => r.isComplete).length} dari {results.length} desa</p>
+          <p>🏆 <strong>Juara Umum {kelas}:</strong> Desa dengan total poin tertinggi dari sesi yang diikuti</p>
+          <p>📊 <strong>Perhitungan:</strong> Total semua final score dari setiap sesi (middle 3 values per sesi)</p>
+          <p>✅ <strong>Fleksibel:</strong> Desa boleh ikut sesuai kemampuan atlet yang dimiliki</p>
+          <p>🎯 <strong>Partisipasi:</strong> {results.length} desa berpartisipasi di kelas {kelas}</p>
         </div>
       </div>
     </div>
