@@ -84,8 +84,8 @@ export default function AdminDashboard({ user }: Props) {
           onClick={() => setActiveTab('overview')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'overview'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Overview
@@ -94,8 +94,8 @@ export default function AdminDashboard({ user }: Props) {
           onClick={() => setActiveTab('competitions')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'competitions'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Ranking
@@ -104,8 +104,8 @@ export default function AdminDashboard({ user }: Props) {
           onClick={() => setActiveTab('details')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'details'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Detail Penilaian
@@ -114,8 +114,8 @@ export default function AdminDashboard({ user }: Props) {
           onClick={() => setActiveTab('users')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'users'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           User
@@ -124,8 +124,8 @@ export default function AdminDashboard({ user }: Props) {
           onClick={() => setActiveTab('logs')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'logs'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Log Aktivitas
@@ -139,36 +139,36 @@ export default function AdminDashboard({ user }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total User</h3>
-              <p className="text-3xl font-bold text-primary-600">{users.length}</p>
+              <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">{users.length}</p>
             </div>
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Aktif</h3>
-              <p className="text-3xl font-bold text-green-600">{activeCompetitions.length}</p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">{activeCompetitions.length}</p>
             </div>
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Selesai</h3>
-              <p className="text-3xl font-bold text-blue-600">{completedCompetitions.length}</p>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{completedCompetitions.length}</p>
             </div>
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Sesi</h3>
-              <p className="text-3xl font-bold text-gray-600">{competitions.length}</p>
+              <p className="text-3xl font-bold text-gray-600 dark:text-gray-400">{competitions.length}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="card">
-              <h3 className="text-lg font-medium mb-4">Sesi Aktif</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Sesi Aktif</h3>
               {activeCompetitions.length === 0 ? (
-                <p className="text-gray-500">Tidak ada sesi aktif</p>
+                <p className="text-gray-500 dark:text-gray-400">Tidak ada sesi aktif</p>
               ) : (
                 <div className="space-y-2">
                   {activeCompetitions.slice(0, 5).map(comp => (
-                    <div key={comp.id} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                    <div key={comp.id} className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
                       <div>
-                        <p className="font-medium">{comp.desa} - {comp.kategori}</p>
-                        <p className="text-sm text-gray-600">{comp.golongan} {comp.kelas}</p>
+                        <p className="font-medium text-gray-900 dark:text-white">{comp.desa} - {comp.kategori}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">{comp.golongan} {comp.kelas}</p>
                       </div>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1 rounded-full text-xs">
                         AKTIF
                       </span>
                     </div>
@@ -178,12 +178,12 @@ export default function AdminDashboard({ user }: Props) {
             </div>
 
             <div className="card">
-              <h3 className="text-lg font-medium mb-4">Aktivitas Terbaru</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Aktivitas Terbaru</h3>
               <div className="space-y-2">
                 {logs.slice(0, 5).map(log => (
-                  <div key={log.id} className="p-2 bg-gray-50 rounded">
-                    <p className="text-sm font-medium">{log.action}</p>
-                    <p className="text-xs text-gray-600">{log.username} - {new Date(log.created_at).toLocaleString()}</p>
+                  <div key={log.id} className="p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">{log.action}</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-300">{log.username} - {new Date(log.created_at).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
@@ -198,11 +198,11 @@ export default function AdminDashboard({ user }: Props) {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Ranking PUTRA</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Ranking PUTRA</h3>
               <RankingView kelas="PUTRA" />
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-4">Ranking PUTRI</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Ranking PUTRI</h3>
               <RankingView kelas="PUTRI" />
             </div>
           </div>
@@ -215,11 +215,11 @@ export default function AdminDashboard({ user }: Props) {
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
-              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRA</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Detail Penilaian PUTRA</h3>
               <ResultsView kelas="PUTRA" />
             </div>
             <div>
-              <h3 className="text-lg font-medium mb-4">Detail Penilaian PUTRI</h3>
+              <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Detail Penilaian PUTRI</h3>
               <ResultsView kelas="PUTRI" />
             </div>
           </div>
@@ -282,11 +282,11 @@ export default function AdminDashboard({ user }: Props) {
                 <div key={log.id} className="border-b pb-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-medium">{log.action}</p>
-                      <p className="text-sm text-gray-600">{log.details}</p>
-                      <p className="text-xs text-gray-500">oleh: {log.username}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{log.action}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{log.details}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">oleh: {log.username}</p>
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
                       {new Date(log.created_at).toLocaleString()}
                     </span>
                   </div>

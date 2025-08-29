@@ -60,8 +60,8 @@ export default function KoordinatorDashboard({ user }: Props) {
           onClick={() => setActiveTab('overview')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'overview'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Overview
@@ -70,8 +70,8 @@ export default function KoordinatorDashboard({ user }: Props) {
           onClick={() => setActiveTab('competitions')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'competitions'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Supervisi Sesi
@@ -80,8 +80,8 @@ export default function KoordinatorDashboard({ user }: Props) {
           onClick={() => setActiveTab('results')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'results'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Ranking
@@ -90,8 +90,8 @@ export default function KoordinatorDashboard({ user }: Props) {
           onClick={() => setActiveTab('details')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'details'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Detail Penilaian
@@ -105,15 +105,15 @@ export default function KoordinatorDashboard({ user }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Aktif</h3>
-              <p className="text-3xl font-bold text-green-600">{activeCompetitions.length}</p>
+              <p className="text-3xl font-bold text-green-600 dark:text-green-400">{activeCompetitions.length}</p>
             </div>
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Selesai</h3>
-              <p className="text-3xl font-bold text-blue-600">{completedCompetitions.length}</p>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{completedCompetitions.length}</p>
             </div>
             <div className="card">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Sesi</h3>
-              <p className="text-3xl font-bold text-gray-600">{competitions.length}</p>
+              <p className="text-3xl font-bold text-gray-600 dark:text-gray-400">{competitions.length}</p>
             </div>
           </div>
 
@@ -124,13 +124,13 @@ export default function KoordinatorDashboard({ user }: Props) {
             ) : (
               <div className="space-y-3">
                 {activeCompetitions.map(competition => (
-                  <div key={competition.id} className="flex items-center justify-between p-3 border rounded-lg bg-green-50">
+                  <div key={competition.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-green-50 dark:bg-green-900/20">
                     <div>
-                      <p className="font-medium">{competition.desa} - {competition.kategori}</p>
-                      <p className="text-sm text-gray-600">{competition.golongan} {competition.kelas}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{competition.desa} - {competition.kategori}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{competition.golongan} {competition.kelas}</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 px-2 py-1 rounded-full text-xs">
                         AKTIF
                       </span>
                       <button
@@ -150,20 +150,20 @@ export default function KoordinatorDashboard({ user }: Props) {
 
       {activeTab === 'competitions' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Supervisi Sesi - {kelas}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Supervisi Sesi - {kelas}</h2>
           
           <div className="card">
-            <h3 className="text-lg font-medium mb-4">Semua Sesi</h3>
+            <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Semua Sesi</h3>
             {competitions.length === 0 ? (
-              <p className="text-gray-500">Belum ada sesi pertandingan untuk kelas {kelas}</p>
+              <p className="text-gray-500 dark:text-gray-400">Belum ada sesi pertandingan untuk kelas {kelas}</p>
             ) : (
               <div className="space-y-3">
                 {competitions.map(competition => (
-                  <div key={competition.id} className="flex items-center justify-between p-3 border rounded-lg">
+                  <div key={competition.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
                     <div>
-                      <p className="font-medium">{competition.desa} - {competition.kategori}</p>
-                      <p className="text-sm text-gray-600">{competition.golongan} {competition.kelas}</p>
-                      <p className="text-xs text-gray-500">{new Date(competition.created_at).toLocaleString()}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{competition.desa} - {competition.kategori}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{competition.golongan} {competition.kelas}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(competition.created_at).toLocaleString()}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 rounded-full text-xs ${
@@ -190,14 +190,14 @@ export default function KoordinatorDashboard({ user }: Props) {
 
       {activeTab === 'results' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Ranking & Hasil - {kelas}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Ranking & Hasil - {kelas}</h2>
           <RankingView kelas={kelas} />
         </div>
       )}
 
       {activeTab === 'details' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Detail Penilaian - {kelas}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Detail Penilaian - {kelas}</h2>
           <ResultsView kelas={kelas} />
         </div>
       )}
