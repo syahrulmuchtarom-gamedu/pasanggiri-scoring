@@ -48,7 +48,6 @@ const MENU_ITEMS = {
 
 export default function Sidebar({ user, activeTab, onTabChange, onLogout }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMobileOpen, setIsMobileOpen] = useState(false);
   
   const getRoleKey = (role: string) => {
     if (role.includes('KOORDINATOR')) return 'KOORDINATOR';
@@ -62,34 +61,27 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout }: Side
   const menuItems = MENU_ITEMS[roleKey as keyof typeof MENU_ITEMS] || [];
 
   return (
-    <>
-      {/* Mobile Backdrop */}
-      {isMobileOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-        isCollapsed ? 'w-16' : 'w-64'
-      } lg:translate-x-0 ${
-        isMobileOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+    <div className={`fixed inset-y-0 left-0 z-50 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+      isCollapsed ? 'w-16' : 'w-64'
+    }`}>
       
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         {!isCollapsed && (
           <div className="flex items-center space-x-3">
-            <img 
-              src="/images/logo.png" 
-              alt="Logo" 
-              className="h-8 w-8" 
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-            />
+            <div className="h-8 w-8 flex items-center justify-center">
+              <img 
+                src="/images/logo.png" 
+                alt="Logo" 
+                className="h-8 w-8" 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (fallback) fallback.style.display = 'block';
+                }}
+              />
+              <span className="text-2xl hidden">🥋</span>
+            </div>
             <div>
               <h1 className="font-bold text-lg text-gray-900 dark:text-white">PASANGGIRI</h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">{user.username}</p>
@@ -154,6 +146,5 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout }: Side
         )}
       </div>
     </div>
-    </>
   );
 }

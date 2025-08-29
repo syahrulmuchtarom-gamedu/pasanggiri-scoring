@@ -45,8 +45,7 @@ export default function Toast({ message, type, duration = 3000, onClose }: Toast
       <button
         onClick={() => {
           setIsVisible(false);
-          const closeTimer = setTimeout(onClose, 300);
-          return () => clearTimeout(closeTimer);
+          setTimeout(onClose, 300);
         }}
         className="ml-2 hover:opacity-70"
       >

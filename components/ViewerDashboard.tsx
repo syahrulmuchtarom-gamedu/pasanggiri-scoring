@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function ViewerDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'putra' | 'putri'>('putra');
+  const [selectedTab, setSelectedTab] = useState<'putra' | 'putri'>('putra');
   
   // Handle external activeTab for sidebar navigation
   const showResults = !externalActiveTab || externalActiveTab === 'results';
@@ -22,9 +22,9 @@ export default function ViewerDashboard({ user, activeTab: externalActiveTab }: 
         <>
           <div className="flex space-x-4 border-b dark:border-gray-700">
             <button
-              onClick={() => setActiveTab('putra')}
+              onClick={() => setSelectedTab('putra')}
               className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'putra'
+                selectedTab === 'putra'
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
               }`}
@@ -32,9 +32,9 @@ export default function ViewerDashboard({ user, activeTab: externalActiveTab }: 
               {showRanking ? 'Ranking' : 'Hasil'} PUTRA
             </button>
             <button
-              onClick={() => setActiveTab('putri')}
+              onClick={() => setSelectedTab('putri'))
               className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'putri'
+                selectedTab === 'putri'
                   ? 'border-primary-500 text-primary-600 dark:text-primary-400'
                   : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
               }`}
@@ -46,14 +46,14 @@ export default function ViewerDashboard({ user, activeTab: externalActiveTab }: 
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                {showRanking ? 'Ranking' : 'Hasil'} Pertandingan - {activeTab.toUpperCase()}
+                {showRanking ? 'Ranking' : 'Hasil'} Pertandingan - {selectedTab.toUpperCase()}
               </h2>
               <div className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm">
                 Mode Viewer (Read-Only)
               </div>
             </div>
             
-            <RankingView kelas={activeTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
+            <RankingView kelas={selectedTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
           </div>
         </>
       )}

@@ -35,7 +35,7 @@ export default function DataVisualization({ data, type, title, className = '' }:
     );
   }
 
-  const maxValue = Math.max(...data.map(d => d.value));
+  const maxValue = data.reduce((max, d) => Math.max(max, d.value), 0);
 
   const renderBarChart = () => (
     <div className="space-y-3">
@@ -65,6 +65,7 @@ export default function DataVisualization({ data, type, title, className = '' }:
 
   const renderPieChart = () => {
     const total = data.reduce((sum, item) => sum + item.value, 0);
+    if (total === 0) return null;
     let currentAngle = 0;
 
     return (
