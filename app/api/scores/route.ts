@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const { competition_id, juri_name, criteria_scores, total_score } = await request.json();
@@ -47,8 +49,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const competition_id = searchParams.get('competition_id');
+    const competition_id = request.nextUrl.searchParams.get('competition_id');
 
     let query = supabaseAdmin
       .from('scores')
