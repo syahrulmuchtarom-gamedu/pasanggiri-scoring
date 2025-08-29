@@ -95,6 +95,7 @@ export default function DashboardPage() {
 
   // Render dashboard component based on user role (DRY principle)
   const renderDashboard = () => {
+    if (!user) return null;
     if (user.role === 'SUPER_ADMIN') return <SuperAdminDashboard user={user} activeTab={activeTab} />;
     if (user.role === 'ADMIN') return <AdminDashboard user={user} activeTab={activeTab} />;
     if (user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') {
