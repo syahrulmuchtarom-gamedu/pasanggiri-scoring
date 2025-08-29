@@ -55,7 +55,7 @@ export default function KoordinatorDashboard({ user }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex space-x-4 border-b">
+      <div className="flex space-x-4 border-b dark:border-gray-700">
         <button
           onClick={() => setActiveTab('overview')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
@@ -100,27 +100,27 @@ export default function KoordinatorDashboard({ user }: Props) {
 
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Dashboard Koordinator {kelas}</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Dashboard Koordinator {kelas}</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Sesi Aktif</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Aktif</h3>
               <p className="text-3xl font-bold text-green-600">{activeCompetitions.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Sesi Selesai</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Selesai</h3>
               <p className="text-3xl font-bold text-blue-600">{completedCompetitions.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Total Sesi</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Sesi</h3>
               <p className="text-3xl font-bold text-gray-600">{competitions.length}</p>
             </div>
           </div>
 
           <div className="card">
-            <h3 className="text-lg font-medium mb-4">Sesi Aktif Saat Ini</h3>
+            <h3 className="text-lg font-medium mb-4 text-gray-900 dark:text-white">Sesi Aktif Saat Ini</h3>
             {activeCompetitions.length === 0 ? (
-              <p className="text-gray-500">Tidak ada sesi aktif untuk kelas {kelas}</p>
+              <p className="text-gray-500 dark:text-gray-400">Tidak ada sesi aktif untuk kelas {kelas}</p>
             ) : (
               <div className="space-y-3">
                 {activeCompetitions.map(competition => (

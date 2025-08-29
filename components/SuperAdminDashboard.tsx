@@ -489,13 +489,13 @@ export default function SuperAdminDashboard({ user }: Props) {
           {toastMessage}
         </div>
       )}
-      <div className="flex space-x-4 border-b">
+      <div className="flex space-x-4 border-b dark:border-gray-700">
         <button
           onClick={() => setActiveTab('users')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
             activeTab === 'users'
-              ? 'border-primary-500 text-primary-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
           }`}
         >
           Manajemen User
@@ -545,7 +545,7 @@ export default function SuperAdminDashboard({ user }: Props) {
       {activeTab === 'users' && (
         <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Manajemen User</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Manajemen User</h2>
             <button
               onClick={() => setShowCreateUser(true)}
               className="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
@@ -663,19 +663,19 @@ export default function SuperAdminDashboard({ user }: Props) {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Username</th>
-                    <th className="text-left py-2">Role</th>
-                    <th className="text-left py-2">Status</th>
-                    <th className="text-left py-2">Dibuat</th>
-                    <th className="text-left py-2">Aksi</th>
+                  <tr className="border-b dark:border-gray-700">
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Username</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Role</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Status</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Dibuat</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map(u => (
-                    <tr key={u.id} className="border-b">
-                      <td className="py-2">{u.username}</td>
-                      <td className="py-2">{u.role}</td>
+                    <tr key={u.id} className="border-b dark:border-gray-700">
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.username}</td>
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.role}</td>
                       <td className="py-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           u.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -683,7 +683,7 @@ export default function SuperAdminDashboard({ user }: Props) {
                           {u.is_active ? 'Aktif' : 'Nonaktif'}
                         </span>
                       </td>
-                      <td className="py-2">{new Date(u.created_at).toLocaleDateString()}</td>
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{new Date(u.created_at).toLocaleDateString()}</td>
                       <td className="py-2">
                         <div className="flex space-x-1">
                           <button

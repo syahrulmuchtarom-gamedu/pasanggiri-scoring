@@ -196,10 +196,10 @@ export default function RankingView({ kelas }: Props) {
     <div className="space-y-6">
       {/* Filters */}
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4">Filter Ranking</h3>
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Filter Ranking</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Kelas</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Kelas</label>
             <input 
               type="text" 
               value={kelas} 
@@ -208,7 +208,7 @@ export default function RankingView({ kelas }: Props) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Golongan</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Golongan</label>
             <select
               value={selectedGolongan}
               onChange={(e) => setSelectedGolongan(e.target.value)}
@@ -221,7 +221,7 @@ export default function RankingView({ kelas }: Props) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Kategori</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Kategori</label>
             <select
               value={selectedKategori}
               onChange={(e) => setSelectedKategori(e.target.value)}
@@ -253,14 +253,14 @@ export default function RankingView({ kelas }: Props) {
 
       {/* Results Table */}
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
           Ranking {selectedKategori === 'ALL' ? 'Juara Umum' : selectedKategori} - {kelas}
           {selectedGolongan !== 'ALL' && ` - ${selectedGolongan}`}
         </h3>
         
         {results.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-500">Belum ada hasil untuk filter yang dipilih</p>
+            <p className="text-gray-500 dark:text-gray-400">Belum ada hasil untuk filter yang dipilih</p>
           </div>
         ) : (
           <div className="overflow-x-auto">

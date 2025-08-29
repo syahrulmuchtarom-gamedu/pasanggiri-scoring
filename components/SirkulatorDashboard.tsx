@@ -133,7 +133,7 @@ export default function SirkulatorDashboard({ user }: Props) {
           {toastMessage}
         </div>
       )}
-      <div className="flex space-x-4 border-b">
+      <div className="flex space-x-4 border-b dark:border-gray-700">
         <button
           onClick={() => setActiveTab('control')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
@@ -159,16 +159,16 @@ export default function SirkulatorDashboard({ user }: Props) {
       {activeTab === 'control' && (
         <div className="space-y-6">
           <div className="card">
-            <h2 className="text-lg font-semibold mb-4">Buat Sesi Pertandingan Baru - {kelas}</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Buat Sesi Pertandingan Baru - {kelas}</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {DESA_LIST.map(desa => (
-                <div key={desa} className="border rounded-lg p-4">
-                  <h3 className="font-medium mb-3">{desa}</h3>
+                <div key={desa} className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg p-4">
+                  <h3 className="font-medium mb-3 text-gray-900 dark:text-white">{desa}</h3>
                   
                   {GOLONGAN_LIST.map(golongan => (
                     <div key={golongan} className="mb-3">
-                      <p className="text-sm font-medium text-gray-600 mb-2">{golongan}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">{golongan}</p>
                       <div className="grid grid-cols-2 gap-2">
                         {KATEGORI_LIST.map(kategori => {
                           const isCreated = isCompetitionCreated(desa, golongan, kategori);
@@ -200,10 +200,10 @@ export default function SirkulatorDashboard({ user }: Props) {
           </div>
 
           <div className="card">
-            <h2 className="text-lg font-semibold mb-4">Sesi Aktif</h2>
+            <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Sesi Aktif</h2>
             
             {competitions.length === 0 ? (
-              <p className="text-gray-500">Belum ada sesi pertandingan</p>
+              <p className="text-gray-500 dark:text-gray-400">Belum ada sesi pertandingan</p>
             ) : (
               <div className="space-y-3">
                 {competitions.map(competition => (
@@ -243,7 +243,7 @@ export default function SirkulatorDashboard({ user }: Props) {
 
       {activeTab === 'results' && (
         <div>
-          <h2 className="text-xl font-semibold mb-6">Hasil Pertandingan - {kelas}</h2>
+          <h2 className="text-xl font-semibold mb-6 text-gray-900 dark:text-white">Hasil Pertandingan - {kelas}</h2>
           <ResultsView kelas={kelas} />
         </div>
       )}

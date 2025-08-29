@@ -13,18 +13,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('darkMode');
-    if (saved) {
-      setIsDark(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem('darkMode');
+      if (saved) {
+        setIsDark(JSON.parse(saved));
+      }
+    } catch (error) {
+      console.error('Error loading theme preference:', error);
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(isDark));
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    try {
+      localStorage.setItem('darkMode', JSON.stringify(isDark));
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (error) {
+      console.error('Error saving theme preference:', error);
     }
   }, [isDark]);
 

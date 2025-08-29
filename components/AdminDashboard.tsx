@@ -79,7 +79,7 @@ export default function AdminDashboard({ user }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex space-x-4 border-b">
+      <div className="flex space-x-4 border-b dark:border-gray-700">
         <button
           onClick={() => setActiveTab('overview')}
           className={`pb-2 px-1 border-b-2 font-medium text-sm ${
@@ -134,23 +134,23 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'overview' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Dashboard Admin</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Dashboard Admin</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Total User</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total User</h3>
               <p className="text-3xl font-bold text-primary-600">{users.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Sesi Aktif</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Aktif</h3>
               <p className="text-3xl font-bold text-green-600">{activeCompetitions.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Sesi Selesai</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Sesi Selesai</h3>
               <p className="text-3xl font-bold text-blue-600">{completedCompetitions.length}</p>
             </div>
             <div className="card">
-              <h3 className="text-lg font-medium text-gray-900">Total Sesi</h3>
+              <h3 className="text-lg font-medium text-gray-900 dark:text-white">Total Sesi</h3>
               <p className="text-3xl font-bold text-gray-600">{competitions.length}</p>
             </div>
           </div>
@@ -194,7 +194,7 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'competitions' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Ranking Pertandingan</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Ranking Pertandingan</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
@@ -211,7 +211,7 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'details' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Detail Penilaian</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Detail Penilaian</h2>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
@@ -228,23 +228,23 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'users' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Manajemen User</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Manajemen User</h2>
           <div className="card">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-2">Username</th>
-                    <th className="text-left py-2">Role</th>
-                    <th className="text-left py-2">Status</th>
-                    <th className="text-left py-2">Aksi</th>
+                  <tr className="border-b dark:border-gray-700">
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Username</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Role</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Status</th>
+                    <th className="text-left py-2 text-gray-900 dark:text-white">Aksi</th>
                   </tr>
                 </thead>
                 <tbody>
                   {users.map(u => (
-                    <tr key={u.id} className="border-b">
-                      <td className="py-2">{u.username}</td>
-                      <td className="py-2">{u.role}</td>
+                    <tr key={u.id} className="border-b dark:border-gray-700">
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.username}</td>
+                      <td className="py-2 text-gray-900 dark:text-gray-100">{u.role}</td>
                       <td className="py-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           u.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -275,7 +275,7 @@ export default function AdminDashboard({ user }: Props) {
 
       {activeTab === 'logs' && (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold">Log Aktivitas</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Log Aktivitas</h2>
           <div className="card">
             <div className="space-y-3">
               {logs.map(log => (
