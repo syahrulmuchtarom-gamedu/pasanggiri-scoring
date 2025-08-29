@@ -6,17 +6,10 @@ import ResultsView from './ResultsView';
 
 interface Props {
   user: User;
-  activeTab?: string;
 }
 
-export default function SirkulatorDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'control' | 'results'>(externalActiveTab as any || 'control');
-  
-  useEffect(() => {
-    if (externalActiveTab) {
-      setActiveTab(externalActiveTab as any);
-    }
-  }, [externalActiveTab]);
+export default function SirkulatorDashboard({ user }: Props) {
+  const [activeTab, setActiveTab] = useState<'control' | 'results'>('control');
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [creatingCompetition, setCreatingCompetition] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -140,7 +133,28 @@ export default function SirkulatorDashboard({ user, activeTab: externalActiveTab
           {toastMessage}
         </div>
       )}
-
+      <div className="flex space-x-4 border-b dark:border-gray-700">
+        <button
+          onClick={() => setActiveTab('control')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'control'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Kontrol Pertandingan
+        </button>
+        <button
+          onClick={() => setActiveTab('results')}
+          className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+            activeTab === 'results'
+              ? 'border-primary-500 text-primary-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Hasil Pertandingan
+        </button>
+      </div>
 
       {activeTab === 'control' && (
         <div className="space-y-6">
@@ -167,10 +181,10 @@ export default function SirkulatorDashboard({ user, activeTab: externalActiveTab
                               disabled={isCreated || isCreating}
                               className={`text-xs px-2 py-1 rounded font-medium transition-all duration-200 ${
                                 isCreated 
-                                  ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300 cursor-not-allowed'
+                                  ? 'bg-green-100 text-green-800 cursor-not-allowed'
                                   : isCreating
-                                  ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300 cursor-wait'
-                                  : 'bg-primary-100 dark:bg-primary-900 hover:bg-primary-200 dark:hover:bg-primary-800 text-primary-700 dark:text-primary-300 hover:shadow-sm'
+                                  ? 'bg-yellow-100 text-yellow-800 cursor-wait'
+                                  : 'bg-primary-100 hover:bg-primary-200 text-primary-700 hover:shadow-sm'
                               }`}
                             >
                               {isCreated ? '✅ CREATED' : isCreating ? '⏳ Creating...' : kategori}
@@ -193,16 +207,16 @@ export default function SirkulatorDashboard({ user, activeTab: externalActiveTab
             ) : (
               <div className="space-y-3">
                 {competitions.map(competition => (
-                  <div key={competition.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800">
+                  <div key={competition.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{competition.desa} - {competition.kategori}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">{competition.golongan} {competition.kelas}</p>
+                      <p className="font-medium">{competition.desa} - {competition.kategori}</p>
+                      <p className="text-sm text-gray-600">{competition.golongan} {competition.kelas}</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <span className={`px-2 py-1 rounded-full text-xs ${
                         competition.status === 'ACTIVE' 
-                          ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300' 
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300'
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-gray-100 text-gray-800'
                       }`}>
                         {competition.status}
                       </span>
