@@ -15,9 +15,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('darkMode');
-      if (saved) {
+      if (saved !== null) {
         setIsDark(JSON.parse(saved));
       }
+      // If no saved preference, stay with default false (light mode)
     } catch (error) {
       console.error('Error loading theme preference:', error);
     }
