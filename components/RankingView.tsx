@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
 import { calculateFinalScore } from '@/lib/scoring';
 import JuaraUmumView from './JuaraUmumView';
+import JuaraUmumGabungan from './JuaraUmumGabungan';
 
 interface Props {
   kelas: 'PUTRA' | 'PUTRI';
@@ -193,7 +194,7 @@ export default function RankingView({ kelas }: Props) {
     );
   }
 
-  // Show Juara Umum if ALL filters are selected
+  // Show Juara Umum per kelas if ALL filters are selected
   if (selectedGolongan === 'ALL' && selectedKategori === 'ALL') {
     return <JuaraUmumView kelas={kelas} />;
   }
