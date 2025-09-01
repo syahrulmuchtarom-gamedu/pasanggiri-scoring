@@ -258,7 +258,7 @@ export default function SirkulatorDashboard({ user, activeTab: externalActiveTab
                       </div>
                     </div>
                   </div>
-                ))
+                ))}
               </div>
             )}
           </div>
