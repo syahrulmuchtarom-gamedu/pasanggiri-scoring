@@ -47,7 +47,7 @@ export default function RankingView({ kelas }: Props) {
       console.log('Competitions:', competitions);
       console.log('Scores:', scores);
 
-      // Group by desa, golongan, kelas
+      // Group by desa only (combine all golongan for each desa)
       const desaResults: Record<string, DesaResult> = {};
 
       competitions.forEach((comp: any) => {
@@ -55,13 +55,13 @@ export default function RankingView({ kelas }: Props) {
         if (selectedGolongan !== 'ALL' && comp.golongan !== selectedGolongan) return;
         if (selectedKategori !== 'ALL' && comp.kategori !== selectedKategori) return;
 
-        const key = `${comp.desa}-${comp.kelas}-${comp.golongan}`;
+        const key = comp.desa; // Group by desa only
         
         if (!desaResults[key]) {
           desaResults[key] = {
             desa: comp.desa,
             kelas: comp.kelas,
-            golongan: comp.golongan,
+            golongan: 'ALL', // Show all golongan combined
             categories: {},
             total_score: 0
           };
@@ -73,12 +73,17 @@ export default function RankingView({ kelas }: Props) {
         
         console.log(`Competition ${comp.desa}-${comp.kategori}: ${competitionScores.length} scores, total: ${totalScore}`);
         
-        desaResults[key].categories[comp.kategori] = totalScore;
+        // Add score to existing category or create new
+        if (desaResults[key].categories[comp.kategori]) {
+          desaResults[key].categories[comp.kategori] += totalScore;
+        } else {
+          desaResults[key].categories[comp.kategori] = totalScore;
+        }
         desaResults[key].total_score += totalScore;
       });
 
-      // Convert to array and sort by total score
-      const sortedResults = Object.values(desaResults).sort((a, b) => b.total_score - a.total_score);
+      // Convert to array and sort by desa name (alphabetical)
+      const sortedResults = Object.values(desaResults).sort((a, b) => a.desa.localeCompare(b.desa));
       console.log('Final results:', sortedResults);
       setResults(sortedResults);
     } catch (error) {
@@ -90,7 +95,7 @@ export default function RankingView({ kelas }: Props) {
 
   const exportToPDF = () => {
     // Create clean HTML for PDF
-    const title = `Ranking ${selectedKategori === 'ALL' ? 'Juara Umum' : selectedKategori} - ${kelas}${selectedGolongan !== 'ALL' ? ` - ${selectedGolongan}` : ''}`;
+    const title = `Hasil ${selectedKategori === 'ALL' ? 'Semua Kategori' : selectedKategori} - ${kelas}${selectedGolongan !== 'ALL' ? ` - ${selectedGolongan}` : ''}`;
     
     const tableHTML = `
       <!DOCTYPE html>
@@ -104,9 +109,6 @@ export default function RankingView({ kelas }: Props) {
           th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
           th { background-color: #f5f5f5; font-weight: bold; text-align: center; }
           td:first-child, td:last-child { text-align: center; font-weight: bold; }
-          .rank-1 { background-color: #fff9c4; }
-          .rank-2 { background-color: #f3f4f6; }
-          .rank-3 { background-color: #fef3c7; }
           .total { color: #2563eb; }
           @media print {
             body { margin: 0; }
@@ -119,22 +121,15 @@ export default function RankingView({ kelas }: Props) {
         <table>
           <thead>
             <tr>
-              <th>Rank</th>
               <th>Desa</th>
-              <th>Golongan</th>
               ${selectedKategori === 'ALL' ? KATEGORI_LIST.map(kat => `<th>${kat}</th>`).join('') : ''}
               <th>Total</th>
             </tr>
           </thead>
           <tbody>
-            ${results.map((result, index) => `
-              <tr class="${index < 3 ? `rank-${index + 1}` : ''}">
-                <td>
-                  ${index + 1}
-                  ${index === 0 ? ' 🥇' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
-                </td>
+            ${results.map((result) => `
+              <tr>
                 <td>${result.desa}</td>
-                <td>${result.golongan}</td>
                 ${selectedKategori === 'ALL' ? KATEGORI_LIST.map(kat => `<td style="text-align: center;">${result.categories[kat] || '-'}</td>`).join('') : ''}
                 <td class="total">${result.total_score}</td>
               </tr>
@@ -173,11 +168,9 @@ export default function RankingView({ kelas }: Props) {
   };
 
   const generateCSV = () => {
-    const headers = ['Rank', 'Desa', 'Golongan', ...KATEGORI_LIST, 'Total'];
-    const rows = results.map((result, index) => [
-      index + 1,
+    const headers = ['Desa', ...KATEGORI_LIST, 'Total'];
+    const rows = results.map((result) => [
       result.desa,
-      result.golongan,
       ...KATEGORI_LIST.map(cat => result.categories[cat] || 0),
       result.total_score
     ]);
@@ -258,7 +251,7 @@ export default function RankingView({ kelas }: Props) {
       {/* Results Table */}
       <div className="card">
         <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-          Ranking {selectedKategori === 'ALL' ? 'Semua Kategori' : selectedKategori} - {kelas}
+          Hasil {selectedKategori === 'ALL' ? 'Semua Kategori' : selectedKategori} - {kelas}
           {selectedGolongan !== 'ALL' && ` - ${selectedGolongan}`}
         </h3>
         
@@ -271,9 +264,7 @@ export default function RankingView({ kelas }: Props) {
             <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-700">
-                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Rank</th>
                   <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Desa</th>
-                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Golongan</th>
                   {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
                     <th key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">{kategori}</th>
                   ))}
@@ -281,16 +272,9 @@ export default function RankingView({ kelas }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {results.map((result, index) => (
-                  <tr key={`${result.desa}-${result.golongan}`} className={index < 3 ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-white dark:bg-gray-800'}>
-                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-bold text-gray-900 dark:text-white">
-                      {index + 1}
-                      {index === 0 && ' 🥇'}
-                      {index === 1 && ' 🥈'}
-                      {index === 2 && ' 🥉'}
-                    </td>
+                {results.map((result) => (
+                  <tr key={result.desa} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium text-gray-900 dark:text-white">{result.desa}</td>
-                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-gray-900 dark:text-white">{result.golongan}</td>
                     {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
                       <td key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">
                         {result.categories[kategori] || '-'}
