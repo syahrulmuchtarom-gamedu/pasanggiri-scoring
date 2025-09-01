@@ -46,6 +46,115 @@ export default function JuaraUmumGabungan() {
     };
   }, []);
 
+  const exportToPDF = () => {
+    const title = 'JUARA UMUM GABUNGAN (PUTRA + PUTRI)';
+    
+    const tableHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${title}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          h1 { text-align: center; margin-bottom: 30px; color: #333; }
+          table { width: 100%; border-collapse: collapse; margin: 0 auto; }
+          th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+          th { background-color: #f5f5f5; font-weight: bold; text-align: center; }
+          td:first-child, td:last-child { text-align: center; font-weight: bold; }
+          .rank-1 { background-color: #fff9c4; }
+          .rank-2 { background-color: #f3f4f6; }
+          .rank-3 { background-color: #fef3c7; }
+          .total { color: #2563eb; font-size: 18px; }
+          .sesi { font-size: 10px; color: #666; }
+          @media print {
+            body { margin: 0; }
+            h1 { page-break-after: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <h1>🏆 ${title}</h1>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Desa</th>
+              <th>Total PUTRA</th>
+              <th>Total PUTRI</th>
+              <th>TOTAL GABUNGAN</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${results.map((result, index) => `
+              <tr class="${index < 3 ? `rank-${index + 1}` : ''}">
+                <td>
+                  ${index + 1}
+                  ${index === 0 ? ' 🥇' : index === 1 ? ' 🥈' : index === 2 ? ' 🥉' : ''}
+                </td>
+                <td>${result.desa}</td>
+                <td style="text-align: center;">
+                  ${result.totalPutra}<br>
+                  <span class="sesi">(${result.sesiPutra} sesi)</span>
+                </td>
+                <td style="text-align: center;">
+                  ${result.totalPutri}<br>
+                  <span class="sesi">(${result.sesiPutri} sesi)</span>
+                </td>
+                <td class="total">${result.totalGabungan}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <div style="margin-top: 30px; font-size: 12px; color: #666;">
+          <p><strong>Juara Umum:</strong> Desa dengan total poin gabungan PUTRA + PUTRI tertinggi</p>
+          <p><strong>Perhitungan:</strong> Total semua final score dari sesi yang diikuti (middle 3 values per sesi)</p>
+          <p><strong>Partisipasi:</strong> ${results.length} desa berpartisipasi</p>
+        </div>
+        <script>
+          window.onload = function() {
+            window.print();
+            window.onafterprint = function() {
+              window.close();
+            }
+          }
+        </script>
+      </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(tableHTML);
+      printWindow.document.close();
+    }
+  };
+
+  const exportToExcel = () => {
+    const csvContent = generateCSV();
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'juara-umum-gabungan.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const generateCSV = () => {
+    const headers = ['Rank', 'Desa', 'Total PUTRA', 'Sesi PUTRA', 'Total PUTRI', 'Sesi PUTRI', 'TOTAL GABUNGAN'];
+    const rows = results.map((result, index) => [
+      index + 1,
+      result.desa,
+      result.totalPutra,
+      result.sesiPutra,
+      result.totalPutri,
+      result.sesiPutri,
+      result.totalGabungan
+    ]);
+    
+    return [headers, ...rows].map(row => row.join(',')).join('\n');
+  };
+
   const fetchJuaraUmumGabungan = async (): Promise<JuaraUmumGabunganResult[]> => {
     try {
       // Fetch data untuk PUTRA dan PUTRI
@@ -148,9 +257,25 @@ export default function JuaraUmumGabungan() {
   return (
     <div className="space-y-6">
       <div className="card">
-        <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-          🏆 JUARA UMUM GABUNGAN (PUTRA + PUTRI)
-        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 sm:mb-0">
+            🏆 JUARA UMUM GABUNGAN (PUTRA + PUTRI)
+          </h3>
+          <div className="flex space-x-2">
+            <button
+              onClick={exportToPDF}
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+            >
+              📄 PDF
+            </button>
+            <button
+              onClick={exportToExcel}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+            >
+              📊 Excel
+            </button>
+          </div>
+        </div>
         
         <div className="overflow-x-auto">
           <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
