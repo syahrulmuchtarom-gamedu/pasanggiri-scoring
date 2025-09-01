@@ -221,7 +221,7 @@ export default function SirkulatorDashboard({ user, activeTab: externalActiveTab
                         <div className="flex justify-end">
                           <button
                             onClick={() => deleteCompetition(competition.id)}
-                            className="bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 px-5.5 py-1 rounded text-xs font-medium"
+                            className="bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 text-red-700 dark:text-red-300 px-5 py-1 rounded text-xs font-medium"
                           >
                             Hapus
                           </button>
