@@ -52,7 +52,13 @@ export async function GET(request: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json(data);
+    const response = NextResponse.json(data);
+    
+    // Add caching headers for better mobile performance
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
+    response.headers.set('CDN-Cache-Control', 'public, s-maxage=30');
+    
+    return response;
   } catch (error) {
     console.error('Error fetching competitions:', error);
     return NextResponse.json(

@@ -1,16 +1,18 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types';
-import SirkulatorDashboard from '@/components/SirkulatorDashboard';
-import JuriDashboard from '@/components/JuriDashboard';
-import SuperAdminDashboard from '@/components/SuperAdminDashboard';
-import AdminDashboard from '@/components/AdminDashboard';
-import KoordinatorDashboard from '@/components/KoordinatorDashboard';
-import ViewerDashboard from '@/components/ViewerDashboard';
 import { Sidebar, CommandPalette, FloatingActionButton, LoadingSpinner } from '@/components/ui';
 import { useKeyboardShortcuts, COMMON_SHORTCUTS } from '@/hooks/useKeyboardShortcuts';
+
+// Lazy load dashboard components
+const SirkulatorDashboard = lazy(() => import('@/components/SirkulatorDashboard'));
+const JuriDashboard = lazy(() => import('@/components/JuriDashboard'));
+const SuperAdminDashboard = lazy(() => import('@/components/SuperAdminDashboard'));
+const AdminDashboard = lazy(() => import('@/components/AdminDashboard'));
+const KoordinatorDashboard = lazy(() => import('@/components/KoordinatorDashboard'));
+const ViewerDashboard = lazy(() => import('@/components/ViewerDashboard'));
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null);
@@ -93,22 +95,26 @@ export default function DashboardPage() {
     ];
   }, [user?.role]);
 
-  // Render dashboard component based on user role (DRY principle)
+  // Render dashboard component based on user role with lazy loading
   const renderDashboard = () => {
     if (!user) return null;
-    if (user.role === 'SUPER_ADMIN') return <SuperAdminDashboard user={user} activeTab={activeTab} />;
-    if (user.role === 'ADMIN') return <AdminDashboard user={user} activeTab={activeTab} />;
-    if (user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') {
-      return <KoordinatorDashboard user={user} activeTab={activeTab} />;
-    }
-    if (user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') {
-      return <SirkulatorDashboard user={user} activeTab={activeTab} />;
-    }
-    if (user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') {
-      return <JuriDashboard user={user} activeTab={activeTab} />;
-    }
-    if (user.role === 'VIEWER') return <ViewerDashboard user={user} activeTab={activeTab} />;
-    return null;
+    
+    return (
+      <Suspense fallback={<LoadingSpinner fullScreen text="Memuat dashboard..." />}>
+        {user.role === 'SUPER_ADMIN' && <SuperAdminDashboard user={user} activeTab={activeTab} />}
+        {user.role === 'ADMIN' && <AdminDashboard user={user} activeTab={activeTab} />}
+        {(user.role === 'KOORDINATOR_PUTRA' || user.role === 'KOORDINATOR_PUTRI') && (
+          <KoordinatorDashboard user={user} activeTab={activeTab} />
+        )}
+        {(user.role === 'SIRKULATOR_PUTRA' || user.role === 'SIRKULATOR_PUTRI') && (
+          <SirkulatorDashboard user={user} activeTab={activeTab} />
+        )}
+        {(user.role === 'JURI_PUTRA' || user.role === 'JURI_PUTRI') && (
+          <JuriDashboard user={user} activeTab={activeTab} />
+        )}
+        {user.role === 'VIEWER' && <ViewerDashboard user={user} activeTab={activeTab} />}
+      </Suspense>
+    );
   };
 
   if (loading) {
