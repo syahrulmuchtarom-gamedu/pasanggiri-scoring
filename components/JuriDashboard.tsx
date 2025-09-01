@@ -13,6 +13,7 @@ interface Score {
   id: string;
   competition_id: string;
   juri_name: string;
+  criteria_scores: Record<string, number>;
   total_score: number;
   created_at: string;
 }
