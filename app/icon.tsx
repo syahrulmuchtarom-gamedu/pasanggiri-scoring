@@ -14,7 +14,7 @@ export default async function Icon() {
   try {
     const logoPath = join(process.cwd(), 'public', 'images', 'logo.png')
     const logoBuffer = await readFile(logoPath)
-    return new Response(logoBuffer, {
+    return new Response(new Uint8Array(logoBuffer), {
       headers: {
         'Content-Type': 'image/png',
       },
