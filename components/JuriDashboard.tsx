@@ -206,9 +206,23 @@ export default function JuriDashboard({ user, activeTab }: Props) {
                         </div>
                         
                         {score && (
-                          <div className="mb-3 p-2 bg-white dark:bg-gray-800 rounded border">
-                            <p className="text-sm font-medium text-gray-900 dark:text-white">Nilai Anda: {score.total_score}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="mb-3 p-3 bg-white dark:bg-gray-800 rounded border">
+                            <div className="flex justify-between items-center mb-2">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">Detail Nilai:</p>
+                              <p className="text-lg font-bold text-primary-600 dark:text-primary-400">{score.total_score}</p>
+                            </div>
+                            
+                            {/* Detail per kriteria */}
+                            <div className="space-y-1 mb-2">
+                              {Object.entries(score.criteria_scores || {}).map(([criteria, value]) => (
+                                <div key={criteria} className="flex justify-between text-xs">
+                                  <span className="text-gray-600 dark:text-gray-300">{criteria}:</span>
+                                  <span className="font-medium text-gray-900 dark:text-white">{value}</span>
+                                </div>
+                              ))}
+                            </div>
+                            
+                            <p className="text-xs text-gray-500 dark:text-gray-400 border-t pt-2">
                               Dinilai: {new Date(score.created_at).toLocaleString('id-ID')}
                             </p>
                           </div>
