@@ -50,6 +50,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const competition_id = request.nextUrl.searchParams.get('competition_id');
+    const juri_name = request.nextUrl.searchParams.get('juri_name');
 
     let query = supabaseAdmin
       .from('scores')
@@ -65,6 +66,10 @@ export async function GET(request: NextRequest) {
 
     if (competition_id) {
       query = query.eq('competition_id', competition_id);
+    }
+
+    if (juri_name) {
+      query = query.eq('juri_name', juri_name);
     }
 
     const { data, error } = await query.order('created_at', { ascending: false });
