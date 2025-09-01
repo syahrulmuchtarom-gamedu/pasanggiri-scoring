@@ -259,7 +259,8 @@ export default function JuaraUmumGabungan() {
       <div className="card">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 sm:mb-0">
-            🏆 JUARA UMUM PASANGGIRI JAKARTA BARAT CENGKARENG
+            🏆 JUARA UMUM PASANGGIRI<br/>
+            JAKARTA BARAT CENGKARENG
           </h3>
           <div className="flex space-x-2">
             <button
