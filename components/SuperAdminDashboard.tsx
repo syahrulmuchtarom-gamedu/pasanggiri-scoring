@@ -722,16 +722,19 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
 
           {/* Competition View Tabs */}
           <div className="flex space-x-4 border-b">
-            <button
-              onClick={() => setCompetitionView('control')}
-              className={`pb-2 px-1 border-b-2 font-medium text-sm ${
-                competitionView === 'control'
-                  ? 'border-green-500 text-green-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              Kontrol Pertandingan
-            </button>
+            {/* Show Kontrol Pertandingan only for PUTRA/PUTRI */}
+            {competitionSubTab !== 'juara_umum' && (
+              <button
+                onClick={() => setCompetitionView('control')}
+                className={`pb-2 px-1 border-b-2 font-medium text-sm ${
+                  competitionView === 'control'
+                    ? 'border-green-500 text-green-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Kontrol Pertandingan
+              </button>
+            )}
             <button
               onClick={() => setCompetitionView('results')}
               className={`pb-2 px-1 border-b-2 font-medium text-sm ${
@@ -743,6 +746,8 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
               Hasil Pertandingan
             </button>
           </div>
+
+
 
           {competitionView === 'control' && competitionSubTab !== 'juara_umum' && (
             <div className="space-y-6">
@@ -839,12 +844,7 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
           {competitionView === 'results' && (
             <div>
               {competitionSubTab === 'juara_umum' ? (
-                <div>
-                  <h3 className="text-lg font-semibold mb-4">
-                    🏆 JUARA UMUM GABUNGAN (PUTRA + PUTRI)
-                  </h3>
-                  <JuaraUmumGabungan />
-                </div>
+                <JuaraUmumGabungan />
               ) : (
                 <div>
                   <h3 className="text-lg font-semibold mb-4">
@@ -853,22 +853,6 @@ export default function SuperAdminDashboard({ user, activeTab: externalActiveTab
                   <RankingView kelas={competitionSubTab.toUpperCase() as 'PUTRA' | 'PUTRI'} />
                 </div>
               )}
-            </div>
-          )}
-          
-          {competitionView === 'control' && competitionSubTab === 'juara_umum' && (
-            <div className="card">
-              <div className="text-center py-8">
-                <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">
-                  🏆 JUARA UMUM GABUNGAN
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  Juara Umum dihitung otomatis berdasarkan gabungan nilai PUTRA + PUTRI dari semua sesi yang telah selesai.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-500">
-                  Silakan lihat tab "Hasil Pertandingan" untuk melihat ranking Juara Umum.
-                </p>
-              </div>
             </div>
           )}
         </div>
