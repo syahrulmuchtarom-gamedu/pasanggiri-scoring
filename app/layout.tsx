@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   description: 'Aplikasi penilaian kompetisi pencak silat Pasanggiri',
   themeColor: '#000000',
   viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/images/logo.ico',
+    shortcut: '/images/logo.png',
+    apple: '/images/logo.png',
+  },
 };
 
 export default function RootLayout({
