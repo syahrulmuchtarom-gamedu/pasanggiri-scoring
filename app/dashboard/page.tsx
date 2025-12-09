@@ -28,7 +28,7 @@ export default function DashboardPage() {
     return 'users';
   };
   
-  const [activeTab, setActiveTab] = useState('users'); // Will be updated when user loads
+  const [activeTab, setActiveTab] = useState('users');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const router = useRouter();
@@ -43,7 +43,10 @@ export default function DashboardPage() {
     try {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      setActiveTab(getDefaultTab(parsedUser.role));
+      
+      // Restore activeTab from localStorage or use default
+      const savedTab = localStorage.getItem('activeTab');
+      setActiveTab(savedTab || getDefaultTab(parsedUser.role));
     } catch (error) {
       console.error('Error parsing user data:', error);
       router.push('/auth/login');
@@ -52,8 +55,16 @@ export default function DashboardPage() {
     }
   }, [router]);
 
+  // Save activeTab to localStorage whenever it changes
+  useEffect(() => {
+    if (activeTab) {
+      localStorage.setItem('activeTab', activeTab);
+    }
+  }, [activeTab]);
+
   const handleLogout = () => {
     localStorage.removeItem('user');
+    localStorage.removeItem('activeTab');
     router.push('/');
   };
 
