@@ -11,14 +11,7 @@ interface Props {
   activeTab?: string;
 }
 
-export default function SuperAdminDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'users' | 'competitions' | 'details' | 'logs' | 'system'>(externalActiveTab as any || 'users');
-  
-  useEffect(() => {
-    if (externalActiveTab) {
-      setActiveTab(externalActiveTab as any);
-    }
-  }, [externalActiveTab]);
+export default function SuperAdminDashboard({ user, activeTab = 'users' }: Props) {
   const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri' | 'juara_umum'>('putra');
   const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
   const [users, setUsers] = useState<User[]>([]);

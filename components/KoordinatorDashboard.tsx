@@ -10,14 +10,7 @@ interface Props {
   activeTab?: string;
 }
 
-export default function KoordinatorDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'results' | 'details'>(externalActiveTab as any || 'overview');
-  
-  useEffect(() => {
-    if (externalActiveTab) {
-      setActiveTab(externalActiveTab as any);
-    }
-  }, [externalActiveTab]);
+export default function KoordinatorDashboard({ user, activeTab = 'overview' }: Props) {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   
   const kelas = user.role === 'KOORDINATOR_PUTRA' ? 'PUTRA' : 'PUTRI';

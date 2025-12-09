@@ -10,14 +10,7 @@ interface Props {
   activeTab?: string;
 }
 
-export default function AdminDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'overview' | 'competitions' | 'details' | 'users' | 'logs'>(externalActiveTab as any || 'overview');
-  
-  useEffect(() => {
-    if (externalActiveTab) {
-      setActiveTab(externalActiveTab as any);
-    }
-  }, [externalActiveTab]);
+export default function AdminDashboard({ user, activeTab = 'overview' }: Props) {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);

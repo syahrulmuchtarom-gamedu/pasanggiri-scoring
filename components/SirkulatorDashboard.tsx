@@ -9,14 +9,7 @@ interface Props {
   activeTab?: string;
 }
 
-export default function SirkulatorDashboard({ user, activeTab: externalActiveTab }: Props) {
-  const [activeTab, setActiveTab] = useState<'control' | 'results'>(externalActiveTab as any || 'control');
-  
-  useEffect(() => {
-    if (externalActiveTab) {
-      setActiveTab(externalActiveTab as any);
-    }
-  }, [externalActiveTab]);
+export default function SirkulatorDashboard({ user, activeTab = 'control' }: Props) {
   const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [creatingCompetition, setCreatingCompetition] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
