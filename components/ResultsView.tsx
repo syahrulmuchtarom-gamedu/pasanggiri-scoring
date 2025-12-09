@@ -160,7 +160,7 @@ export default function ResultsView({ kelas }: Props) {
                           </td>
                           <td className="py-2 font-medium text-gray-900 dark:text-gray-100">{result.competition.desa}</td>
                           <td className="py-2">
-                            <ScoringDetails scores={result.scores} showDetails={true} />
+                            <ScoringDetails scores={result.scores} showDetails={true} kategori={result.competition.kategori} />
                           </td>
                           <td className="py-2 text-center">
                             <span className={`px-2 py-1 rounded-full text-xs ${

@@ -1,13 +1,24 @@
 'use client';
 
+import { useState } from 'react';
 import { getScoringDetails } from '@/lib/scoring';
+import { Kategori } from '@/types';
+import ScoreBreakdownModal from './ScoreBreakdownModal';
 
 interface Props {
   scores: any[];
   showDetails?: boolean;
+  kategori?: Kategori;
 }
 
-export default function ScoringDetails({ scores, showDetails = false }: Props) {
+export default function ScoringDetails({ scores, showDetails = false, kategori }: Props) {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedScore, setSelectedScore] = useState<any>(null);
+
+  const handleScoreClick = (score: any) => {
+    setSelectedScore(score);
+    setModalOpen(true);
+  };
   if (scores.length === 0) {
     return (
       <div className="text-gray-500 dark:text-gray-400 text-sm">
@@ -19,6 +30,7 @@ export default function ScoringDetails({ scores, showDetails = false }: Props) {
   const details = getScoringDetails(scores);
 
   return (
+    <>
     <div className="space-y-2">
       <div className="flex items-center space-x-4">
         <span className="font-bold text-lg text-primary-600 dark:text-primary-400">
@@ -73,10 +85,21 @@ export default function ScoringDetails({ scores, showDetails = false }: Props) {
                 const isLowest = index === 0;
                 const isHighest = index === juriScores.length - 1;
                 const isDiscarded = isLowest || isHighest;
+                const fullScore = scores.find(s => s.juri_name === item.juri);
                 
                 return (
                   <div key={index} className={isDiscarded ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}>
-                    {isDiscarded ? '🔴' : '🟢'} {item.juri}: {item.score} 
+                    {isDiscarded ? '🔴' : '🟢'} {item.juri}: 
+                    {kategori ? (
+                      <button
+                        onClick={() => handleScoreClick(fullScore)}
+                        className="inline-flex items-center gap-1 underline hover:no-underline font-medium"
+                      >
+                        {item.score} 🔍
+                      </button>
+                    ) : (
+                      <span className="font-medium">{item.score}</span>
+                    )}
                     {isLowest && ' (dibuang - terendah)'}
                     {isHighest && ' (dibuang - tertinggi)'}
                     {!isDiscarded && ' (dipakai)'}
@@ -88,5 +111,16 @@ export default function ScoringDetails({ scores, showDetails = false }: Props) {
         </div>
       )}
     </div>
+
+    {/* Modal */}
+    {kategori && (
+      <ScoreBreakdownModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        score={selectedScore}
+        kategori={kategori}
+      />
+    )}
+    </>
   );
 }
