@@ -53,8 +53,37 @@ export default function ScoringDetails({ scores, showDetails = false }: Props) {
             </div>
           )}
 
-          <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Semua nilai juri: {scores.map(s => s.total_score).sort((a, b) => a - b).join(', ')}
+          <div className="text-xs mt-3 space-y-1">
+            <div className="font-medium text-gray-700 dark:text-gray-300 mb-2">Detail Nilai Juri:</div>
+            {(() => {
+              // Create array of scores with juri names
+              const juriScores = scores.map(s => ({
+                juri: s.juri_name,
+                score: s.total_score
+              }));
+              
+              // Sort by score
+              juriScores.sort((a, b) => a.score - b.score);
+              
+              // Determine which scores are discarded
+              const lowestScore = juriScores[0]?.score;
+              const highestScore = juriScores[juriScores.length - 1]?.score;
+              
+              return juriScores.map((item, index) => {
+                const isLowest = index === 0;
+                const isHighest = index === juriScores.length - 1;
+                const isDiscarded = isLowest || isHighest;
+                
+                return (
+                  <div key={index} className={isDiscarded ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}>
+                    {isDiscarded ? '🔴' : '🟢'} {item.juri}: {item.score} 
+                    {isLowest && ' (dibuang - terendah)'}
+                    {isHighest && ' (dibuang - tertinggi)'}
+                    {!isDiscarded && ' (dipakai)'}
+                  </div>
+                );
+              });
+            })()}
           </div>
         </div>
       )}
