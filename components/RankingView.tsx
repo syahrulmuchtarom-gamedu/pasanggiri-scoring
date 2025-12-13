@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST, SCORING_CRITERIA } from '@/types';
-import { calculateFinalScore, calculateMiddle3SumForCriteria } from '@/lib/scoring';
+import { calculateFinalScore, calculateMiddle3SumForCriteria, getMiddle3ValuesForCriteria } from '@/lib/scoring';
 
 
 interface Props {
@@ -390,11 +390,11 @@ export default function RankingView({ kelas }: Props) {
                       Range: {criteria.min} - {criteria.max}
                     </div>
                     <div className="mt-2 text-xs">
-                      <span className="text-gray-600 dark:text-gray-400">Nilai dari juri: </span>
-                      {modalData.scores.map((score, idx) => (
-                        <span key={idx} className="text-gray-700 dark:text-gray-300">
-                          {score.criteria_scores?.[criteria.name] || 0}
-                          {idx < modalData.scores.length - 1 ? ', ' : ''}
+                      <span className="text-gray-600 dark:text-gray-400">Nilai 3 juri tengah: </span>
+                      {getMiddle3ValuesForCriteria(modalData.scores, criteria.name).map((val, idx, arr) => (
+                        <span key={idx} className="text-green-600 dark:text-green-400 font-semibold">
+                          {val}
+                          {idx < arr.length - 1 ? ', ' : ''}
                         </span>
                       ))}
                     </div>
