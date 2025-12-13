@@ -143,6 +143,37 @@ export function calculateMiddle3SumForCriteria(scores: any[], criteriaName: stri
 }
 
 /**
+ * Get middle 3 values for a specific criteria (for display)
+ */
+export function getMiddle3ValuesForCriteria(scores: any[], criteriaName: string): number[] {
+  if (scores.length === 0) return [];
+  
+  const criteriaValues = scores
+    .map(score => score.criteria_scores?.[criteriaName] || 0)
+    .sort((a, b) => a - b);
+  
+  if (criteriaValues.length < 3) {
+    return criteriaValues;
+  }
+  
+  if (criteriaValues.length === 3) {
+    return criteriaValues;
+  }
+  
+  if (criteriaValues.length === 4) {
+    return criteriaValues.slice(0, -1);
+  }
+  
+  const middleValues = criteriaValues.slice(1, -1);
+  if (middleValues.length > 3) {
+    const startIndex = Math.floor((middleValues.length - 3) / 2);
+    return middleValues.slice(startIndex, startIndex + 3);
+  }
+  
+  return middleValues;
+}
+
+/**
  * Get tie-breaker criteria priority based on category
  */
 export function getTieBreakerPriority(kategori: string): string[] {
