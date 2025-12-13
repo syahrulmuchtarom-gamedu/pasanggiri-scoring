@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
 import ModalPeserta from './ModalPeserta';
+import PesertaTerdaftarTab from './PesertaTerdaftarTab';
 
 interface Props {
   userRole: string;
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export default function AdministrasiPertandingan({ userRole, userId }: Props) {
-  const [activeTab, setActiveTab] = useState<'PUTRA' | 'PUTRI'>('PUTRA');
+  const [activeTab, setActiveTab] = useState<'PUTRA' | 'PUTRI' | 'PESERTA'>('PUTRA');
   const [eventStatus, setEventStatus] = useState<any>(null);
   const [undianData, setUndianData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +160,7 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 flex-wrap">
           <button
             onClick={() => setActiveTab('PUTRA')}
             className={`px-6 py-2 rounded font-semibold ${
@@ -180,26 +181,58 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
           >
             PUTRI
           </button>
+          <button
+            onClick={() => setActiveTab('PESERTA')}
+            className={`px-6 py-2 rounded font-semibold ${
+              activeTab === 'PESERTA'
+                ? 'bg-primary-600 text-white'
+                : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            📋 Peserta Terdaftar
+          </button>
         </div>
 
         {/* Status */}
-        <div className={`p-4 rounded ${
-          eventStatus?.is_locked
-            ? 'bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700'
-            : 'bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-700'
-        }`}>
-          <p className="font-semibold text-gray-900 dark:text-white">
-            Status Event: {eventStatus?.is_locked ? '🔴 EVENT BERJALAN (LOCKED)' : '🟢 BELUM DIMULAI'}
-          </p>
-          {eventStatus?.is_locked && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              ⚠️ Data tidak dapat diubah selama event berjalan
+        {activeTab !== 'PESERTA' && (
+          <div className={`p-4 rounded ${
+            eventStatus?.is_locked
+              ? 'bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700'
+              : 'bg-green-100 dark:bg-green-900/20 border border-green-300 dark:border-green-700'
+          }`}>
+            <p className="font-semibold text-gray-900 dark:text-white">
+              Status Event: {eventStatus?.is_locked ? '🔴 EVENT BERJALAN (LOCKED)' : '🟢 BELUM DIMULAI'}
             </p>
-          )}
-        </div>
+            {eventStatus?.is_locked && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                ⚠️ Data tidak dapat diubah selama event berjalan
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
+      {/* Tab Peserta Terdaftar */}
+      {activeTab === 'PESERTA' && (
+        <div className="space-y-4">
+          <PesertaTerdaftarTab
+            kelas="PUTRA"
+            isLocked={eventStatus?.is_locked || false}
+            canEdit={canEdit}
+            onUpdate={fetchData}
+          />
+          <div className="border-t-4 border-gray-300 dark:border-gray-600 my-8"></div>
+          <PesertaTerdaftarTab
+            kelas="PUTRI"
+            isLocked={eventStatus?.is_locked || false}
+            canEdit={canEdit}
+            onUpdate={fetchData}
+          />
+        </div>
+      )}
+
       {/* Undian List */}
+      {activeTab !== 'PESERTA' && (
       <div className="space-y-6">
         {KATEGORI_LIST.map(kategori => (
           <div key={kategori} className="space-y-4">
@@ -264,6 +297,7 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
           </div>
         ))}
       </div>
+      )}
 
       {/* Modal */}
       {selectedUndian && (
