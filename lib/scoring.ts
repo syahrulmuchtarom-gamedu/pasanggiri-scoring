@@ -174,35 +174,47 @@ export function getMiddle3ValuesForCriteria(scores: any[], criteriaName: string)
 }
 
 /**
+ * Get middle 3 juries based on total score
+ */
+export function getMiddle3Juries(scores: any[]): string[] {
+  if (scores.length === 0) return [];
+  
+  const sortedScores = [...scores].sort((a, b) => a.total_score - b.total_score);
+  
+  if (sortedScores.length < 3) {
+    return sortedScores.map(s => s.juri_name);
+  }
+  
+  if (sortedScores.length === 3) {
+    return sortedScores.map(s => s.juri_name);
+  }
+  
+  if (sortedScores.length === 4) {
+    return sortedScores.slice(0, -1).map(s => s.juri_name);
+  }
+  
+  const middleScores = sortedScores.slice(1, -1);
+  if (middleScores.length > 3) {
+    const startIndex = Math.floor((middleScores.length - 3) / 2);
+    return middleScores.slice(startIndex, startIndex + 3).map(s => s.juri_name);
+  }
+  
+  return middleScores.map(s => s.juri_name);
+}
+
+/**
  * Get middle 3 juries with their scores for a specific criteria
  */
 export function getMiddle3JuriesForCriteria(scores: any[], criteriaName: string): { juri: string; value: number }[] {
-  if (scores.length === 0) return [];
+  const middle3Juries = getMiddle3Juries(scores);
   
-  const juriScores = scores.map(score => ({
-    juri: score.juri_name,
-    value: score.criteria_scores?.[criteriaName] || 0
-  })).sort((a, b) => a.value - b.value);
-  
-  if (juriScores.length < 3) {
-    return juriScores;
-  }
-  
-  if (juriScores.length === 3) {
-    return juriScores;
-  }
-  
-  if (juriScores.length === 4) {
-    return juriScores.slice(0, -1);
-  }
-  
-  const middleJuries = juriScores.slice(1, -1);
-  if (middleJuries.length > 3) {
-    const startIndex = Math.floor((middleJuries.length - 3) / 2);
-    return middleJuries.slice(startIndex, startIndex + 3);
-  }
-  
-  return middleJuries;
+  return scores
+    .filter(score => middle3Juries.includes(score.juri_name))
+    .map(score => ({
+      juri: score.juri_name,
+      value: score.criteria_scores?.[criteriaName] || 0
+    }))
+    .sort((a, b) => a.value - b.value);
 }
 
 /**
