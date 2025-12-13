@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/types';
-import { calculateFinalScore } from '@/lib/scoring';
+import { DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST, SCORING_CRITERIA } from '@/types';
+import { calculateFinalScore, calculateMiddle3SumForCriteria } from '@/lib/scoring';
 
 
 interface Props {
@@ -14,6 +14,7 @@ interface DesaResult {
   kelas: string;
   golongan: string;
   categories: Record<string, number>;
+  categoryDetails: Record<string, any[]>; // Store scores for each category
   total_score: number;
   rank?: number;
 }
@@ -23,6 +24,8 @@ export default function RankingView({ kelas }: Props) {
   const [loading, setLoading] = useState(true);
   const [selectedGolongan, setSelectedGolongan] = useState<string>('ALL');
   const [selectedKategori, setSelectedKategori] = useState<string>('ALL');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<{ desa: string; kategori: string; scores: any[] } | null>(null);
 
   useEffect(() => {
     fetchResults();
@@ -64,6 +67,7 @@ export default function RankingView({ kelas }: Props) {
             kelas: comp.kelas,
             golongan: 'ALL', // Show all golongan combined
             categories: {},
+            categoryDetails: {},
             total_score: 0
           };
         }
@@ -73,6 +77,12 @@ export default function RankingView({ kelas }: Props) {
         const totalScore = calculateFinalScore(competitionScores);
         
         console.log(`Competition ${comp.desa}-${comp.kategori}: ${competitionScores.length} scores, total: ${totalScore}`);
+        
+        // Store scores for detail view
+        if (!desaResults[key].categoryDetails[comp.kategori]) {
+          desaResults[key].categoryDetails[comp.kategori] = [];
+        }
+        desaResults[key].categoryDetails[comp.kategori].push(...competitionScores);
         
         // Add score to existing category or create new
         if (desaResults[key].categories[comp.kategori]) {
@@ -187,6 +197,13 @@ export default function RankingView({ kelas }: Props) {
     ]);
     
     return [headers, ...rows].map(row => row.join(',')).join('\n');
+  };
+
+  const handleCategoryClick = (desa: string, kategori: string, scores: any[]) => {
+    if (scores && scores.length > 0) {
+      setModalData({ desa, kategori, scores });
+      setModalOpen(true);
+    }
   };
 
   if (loading) {
@@ -307,8 +324,19 @@ export default function RankingView({ kelas }: Props) {
                       </td>
                       <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium text-gray-900 dark:text-white">{result.desa}</td>
                       {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
-                        <td key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">
-                          {result.categories[kategori] || '-'}
+                        <td 
+                          key={kategori} 
+                          className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white"
+                        >
+                          {result.categories[kategori] ? (
+                            <button
+                              onClick={() => handleCategoryClick(result.desa, kategori, result.categoryDetails[kategori] || [])}
+                              className="text-primary-600 dark:text-primary-400 hover:underline font-semibold cursor-pointer"
+                              title="Klik untuk lihat detail kriteria"
+                            >
+                              {result.categories[kategori]} 🔍
+                            </button>
+                          ) : '-'}
                         </td>
                       ))}
                       <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-bold text-primary-600 dark:text-primary-400">
@@ -322,6 +350,70 @@ export default function RankingView({ kelas }: Props) {
           </div>
         )}
       </div>
+
+      {/* Modal Detail Kriteria */}
+      {modalOpen && modalData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setModalOpen(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Detail Kriteria - {modalData.desa}
+              </h3>
+              <button
+                onClick={() => setModalOpen(false)}
+                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="mb-4">
+              <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                Kategori: {modalData.kategori}
+              </h4>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Total Nilai: <span className="font-bold text-primary-600 dark:text-primary-400">{calculateFinalScore(modalData.scores)}</span>
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {SCORING_CRITERIA[modalData.kategori as keyof typeof SCORING_CRITERIA]?.map((criteria) => {
+                const sum = calculateMiddle3SumForCriteria(modalData.scores, criteria.name);
+                return (
+                  <div key={criteria.name} className="border border-gray-300 dark:border-gray-600 rounded p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <h5 className="font-semibold text-gray-900 dark:text-white">{criteria.name}</h5>
+                      <span className="text-lg font-bold text-primary-600 dark:text-primary-400">{sum}</span>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{criteria.description}</p>
+                    <div className="text-xs text-gray-500 dark:text-gray-500">
+                      Range: {criteria.min} - {criteria.max}
+                    </div>
+                    <div className="mt-2 text-xs">
+                      <span className="text-gray-600 dark:text-gray-400">Nilai dari juri: </span>
+                      {modalData.scores.map((score, idx) => (
+                        <span key={idx} className="text-gray-700 dark:text-gray-300">
+                          {score.criteria_scores?.[criteria.name] || 0}
+                          {idx < modalData.scores.length - 1 ? ', ' : ''}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setModalOpen(false)}
+                className="bg-primary-600 text-white px-6 py-2 rounded hover:bg-primary-700"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
