@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { User, Competition, ActivityLog } from '@/types';
 import RankingView from './RankingView';
 import ResultsView from './ResultsView';
+import AdministrasiPertandingan from './AdministrasiPertandingan';
 
 interface Props {
   user: User;
@@ -244,6 +245,10 @@ export default function AdminDashboard({ user, activeTab = 'overview' }: Props) 
             </div>
           </div>
         </div>
+      )}
+
+      {activeTab === 'administrasi' && (
+        <AdministrasiPertandingan userRole={user.role} userId={user.id} />
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import { User, ActivityLog, DESA_LIST, GOLONGAN_LIST, KATEGORI_LIST } from '@/ty
 import ResultsView from './ResultsView';
 import RankingView from './RankingView';
 import JuaraUmumGabungan from './JuaraUmumGabungan';
+import AdministrasiPertandingan from './AdministrasiPertandingan';
 
 interface Props {
   user: User;
@@ -968,6 +969,10 @@ export default function SuperAdminDashboard({ user, activeTab = 'users' }: Props
             </div>
           </div>
         </div>
+      )}
+
+      {activeTab === 'administrasi' && (
+        <AdministrasiPertandingan userRole={user.role} userId={user.id} />
       )}
     </div>
   );
