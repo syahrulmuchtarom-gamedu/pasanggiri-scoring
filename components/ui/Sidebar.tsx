@@ -15,14 +15,16 @@ const MENU_ITEMS = {
   SUPER_ADMIN: [
     { id: 'users', label: 'Manajemen User', icon: '👥', shortcut: 'U' },
     { id: 'competitions', label: 'Pertandingan', icon: '🥋', shortcut: 'C' },
-    { id: 'details', label: 'Detail Penilaian', icon: '📋', shortcut: 'P' },
+    { id: 'administrasi', label: 'Administrasi Pertandingan', icon: '📋', shortcut: 'A' },
+    { id: 'details', label: 'Detail Penilaian', icon: '📊', shortcut: 'P' },
     { id: 'logs', label: 'Log Aktivitas', icon: '📝', shortcut: 'L' },
     { id: 'system', label: 'Sistem', icon: '⚙️', shortcut: 'S' }
   ],
   ADMIN: [
     { id: 'overview', label: 'Dashboard', icon: '📊', shortcut: 'D' },
     { id: 'competitions', label: 'Ranking', icon: '🥋', shortcut: 'C' },
-    { id: 'details', label: 'Detail Penilaian', icon: '📋', shortcut: 'P' },
+    { id: 'administrasi', label: 'Administrasi Pertandingan', icon: '📋', shortcut: 'A' },
+    { id: 'details', label: 'Detail Penilaian', icon: '📈', shortcut: 'P' },
     { id: 'users', label: 'User', icon: '👥', shortcut: 'U' },
     { id: 'logs', label: 'Log Aktivitas', icon: '📝', shortcut: 'L' }
   ],
