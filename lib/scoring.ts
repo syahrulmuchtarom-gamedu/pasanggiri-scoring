@@ -110,3 +110,112 @@ export function getScoringDetails(scores: any[]): {
     method: 'Highest and lowest scores discarded, middle 3 used'
   };
 }
+
+/**
+ * Calculate sum of middle 3 values for a specific criteria
+ */
+export function calculateMiddle3SumForCriteria(scores: any[], criteriaName: string): number {
+  if (scores.length === 0) return 0;
+  
+  const criteriaValues = scores
+    .map(score => score.criteria_scores?.[criteriaName] || 0)
+    .sort((a, b) => a - b);
+  
+  if (criteriaValues.length < 3) {
+    return criteriaValues.reduce((sum, val) => sum + val, 0);
+  }
+  
+  if (criteriaValues.length === 3) {
+    return criteriaValues.reduce((sum, val) => sum + val, 0);
+  }
+  
+  if (criteriaValues.length === 4) {
+    return criteriaValues.slice(0, -1).reduce((sum, val) => sum + val, 0);
+  }
+  
+  const middleValues = criteriaValues.slice(1, -1);
+  if (middleValues.length > 3) {
+    const startIndex = Math.floor((middleValues.length - 3) / 2);
+    return middleValues.slice(startIndex, startIndex + 3).reduce((sum, val) => sum + val, 0);
+  }
+  
+  return middleValues.reduce((sum, val) => sum + val, 0);
+}
+
+/**
+ * Get tie-breaker criteria priority based on category
+ */
+export function getTieBreakerPriority(kategori: string): string[] {
+  const priorities: Record<string, string[]> = {
+    'PERORANGAN': ['ORISINALITAS', 'KEMANTAPAN', 'STAMINA'],
+    'ATT': ['ORISINALITAS', 'KEMANTAPAN', 'KEKAYAAAN TEKNIK'],
+    'BERKELOMPOK': ['ORISINALITAS', 'KEMANTAPAN', 'KEKOMPAKAN'],
+    'MASAL': ['ORISINALITAS', 'KEMANTAPAN', 'KEKOMPAKAN', 'KREATIFITAS'],
+    'BERPASANGAN': ['TEKNIK SERANG BELA', 'KEMANTAPAN', 'PENGHAYATAN']
+  };
+  
+  return priorities[kategori] || [];
+}
+
+/**
+ * Apply tie-breaker logic to compare two results
+ * Returns: -1 if a > b, 1 if b > a, 0 if tie
+ */
+export function applyTieBreaker(
+  resultA: { finalScore: number; scores: any[] },
+  resultB: { finalScore: number; scores: any[] },
+  kategori: string
+): number {
+  // First compare by final score
+  if (resultA.finalScore !== resultB.finalScore) {
+    return resultB.finalScore - resultA.finalScore;
+  }
+  
+  // If final scores are equal, apply tie-breaker
+  const priorities = getTieBreakerPriority(kategori);
+  
+  for (const criteria of priorities) {
+    const sumA = calculateMiddle3SumForCriteria(resultA.scores, criteria);
+    const sumB = calculateMiddle3SumForCriteria(resultB.scores, criteria);
+    
+    if (sumA !== sumB) {
+      return sumB - sumA; // Higher is better
+    }
+  }
+  
+  // If all criteria are equal, it's a tie (co-champion)
+  return 0;
+}
+
+/**
+ * Sort results with tie-breaker and assign rankings
+ */
+export function sortWithTieBreaker<T extends { finalScore: number; scores: any[] }>(
+  results: T[],
+  kategori: string
+): (T & { rank: number })[] {
+  // Sort using tie-breaker
+  const sorted = [...results].sort((a, b) => applyTieBreaker(a, b, kategori));
+  
+  // Assign rankings with tie handling
+  let currentRank = 1;
+  const rankedResults = sorted.map((result, index) => {
+    if (index > 0) {
+      const prevResult = sorted[index - 1];
+      const comparison = applyTieBreaker(result, prevResult, kategori);
+      
+      if (comparison !== 0) {
+        // Different score, update rank
+        currentRank = index + 1;
+      }
+      // If comparison === 0, keep same rank (tie)
+    }
+    
+    return {
+      ...result,
+      rank: currentRank
+    };
+  });
+  
+  return rankedResults;
+}
