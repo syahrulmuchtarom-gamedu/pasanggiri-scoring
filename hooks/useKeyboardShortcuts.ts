@@ -14,6 +14,14 @@ export function useKeyboardShortcuts(shortcuts: Shortcut[], enabled = true) {
     if (!enabled) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Ignore shortcuts when typing in input fields
+      const target = event.target as HTMLElement;
+      const isInputField = target.tagName === 'INPUT' || 
+                          target.tagName === 'TEXTAREA' || 
+                          target.isContentEditable;
+      
+      if (isInputField) return;
+
       const shortcut = shortcuts.find(s => 
         s.key.toLowerCase() === event.key.toLowerCase() &&
         !!s.ctrlKey === event.ctrlKey &&
