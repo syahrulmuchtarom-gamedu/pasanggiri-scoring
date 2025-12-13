@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Competition, Score, DESA_LIST, KATEGORI_LIST, GOLONGAN_LIST } from '@/types';
-import { calculateFinalScore } from '@/lib/scoring';
+import { calculateFinalScore, sortWithTieBreaker } from '@/lib/scoring';
 import ScoringDetails from './ScoringDetails';
 
 interface Props {
@@ -82,9 +82,11 @@ export default function ResultsView({ kelas }: Props) {
     return acc;
   }, {} as Record<string, CompetitionResult[]>);
 
-  // Sort each group by final score (descending)
+  // Sort each group with tie-breaker and assign rankings
+  const rankedGroupedResults: Record<string, (CompetitionResult & { rank: number })[]> = {};
   Object.keys(groupedResults).forEach(key => {
-    groupedResults[key].sort((a, b) => b.finalScore - a.finalScore);
+    const [golongan, kategori] = key.split('-');
+    rankedGroupedResults[key] = sortWithTieBreaker(groupedResults[key], kategori);
   });
 
   if (loading) {
@@ -127,7 +129,7 @@ export default function ResultsView({ kelas }: Props) {
         </div>
       ) : (
         <div className="space-y-8">
-          {Object.entries(groupedResults).map(([key, results]) => {
+          {Object.entries(rankedGroupedResults).map(([key, results]) => {
             const [golongan, kategori] = key.split('-');
             return (
               <div key={key} className="card">
@@ -146,33 +148,43 @@ export default function ResultsView({ kelas }: Props) {
                       </tr>
                     </thead>
                     <tbody>
-                      {results.map((result, index) => (
-                        <tr key={result.competition.id} className="border-b dark:border-gray-700">
-                          <td className="py-2">
-                            <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold ${
-                              index === 0 ? 'bg-yellow-500' :
-                              index === 1 ? 'bg-gray-400' :
-                              index === 2 ? 'bg-orange-600' :
-                              'bg-gray-300 text-gray-700'
-                            }`}>
-                              {index + 1}
-                            </span>
-                          </td>
-                          <td className="py-2 font-medium text-gray-900 dark:text-gray-100">{result.competition.desa}</td>
-                          <td className="py-2">
-                            <ScoringDetails scores={result.scores} showDetails={true} kategori={result.competition.kategori} />
-                          </td>
-                          <td className="py-2 text-center">
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              result.competition.status === 'COMPLETED'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}>
-                              {result.competition.status}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
+                      {results.map((result) => {
+                        const isTied = results.filter(r => r.rank === result.rank).length > 1;
+                        return (
+                          <tr key={result.competition.id} className="border-b dark:border-gray-700">
+                            <td className="py-2">
+                              <div className="flex items-center gap-2">
+                                <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold ${
+                                  result.rank === 1 ? 'bg-yellow-500' :
+                                  result.rank === 2 ? 'bg-gray-400' :
+                                  result.rank === 3 ? 'bg-orange-600' :
+                                  'bg-gray-300 text-gray-700'
+                                }`}>
+                                  {result.rank}
+                                </span>
+                                {isTied && (
+                                  <span className="text-xs text-red-600 dark:text-red-400 font-semibold">
+                                    (Bersama)
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-2 font-medium text-gray-900 dark:text-gray-100">{result.competition.desa}</td>
+                            <td className="py-2">
+                              <ScoringDetails scores={result.scores} showDetails={true} kategori={result.competition.kategori} />
+                            </td>
+                            <td className="py-2 text-center">
+                              <span className={`px-2 py-1 rounded-full text-xs ${
+                                result.competition.status === 'COMPLETED'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                {result.competition.status}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

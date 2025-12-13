@@ -15,6 +15,7 @@ interface DesaResult {
   golongan: string;
   categories: Record<string, number>;
   total_score: number;
+  rank?: number;
 }
 
 export default function RankingView({ kelas }: Props) {
@@ -82,10 +83,20 @@ export default function RankingView({ kelas }: Props) {
         desaResults[key].total_score += totalScore;
       });
 
-      // Convert to array and sort by desa name (alphabetical)
-      const sortedResults = Object.values(desaResults).sort((a, b) => a.desa.localeCompare(b.desa));
-      console.log('Final results:', sortedResults);
-      setResults(sortedResults);
+      // Convert to array and sort by total score (descending)
+      const sortedResults = Object.values(desaResults).sort((a, b) => b.total_score - a.total_score);
+      
+      // Assign rankings with tie handling
+      let currentRank = 1;
+      const rankedResults = sortedResults.map((result, index) => {
+        if (index > 0 && sortedResults[index - 1].total_score !== result.total_score) {
+          currentRank = index + 1;
+        }
+        return { ...result, rank: currentRank };
+      });
+      
+      console.log('Final results:', rankedResults);
+      setResults(rankedResults);
     } catch (error) {
       console.error('Error fetching results:', error);
     } finally {
@@ -264,6 +275,7 @@ export default function RankingView({ kelas }: Props) {
             <table className="w-full border-collapse border border-gray-300 dark:border-gray-600">
               <thead>
                 <tr className="bg-gray-50 dark:bg-gray-700">
+                  <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">Rank</th>
                   <th className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-left text-gray-900 dark:text-white">Desa</th>
                   {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
                     <th key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">{kategori}</th>
@@ -272,19 +284,39 @@ export default function RankingView({ kelas }: Props) {
                 </tr>
               </thead>
               <tbody>
-                {results.map((result) => (
-                  <tr key={result.desa} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium text-gray-900 dark:text-white">{result.desa}</td>
-                    {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
-                      <td key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">
-                        {result.categories[kategori] || '-'}
+                {results.map((result) => {
+                  const isTied = results.filter(r => r.rank === result.rank).length > 1;
+                  return (
+                    <tr key={result.desa} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-white font-bold ${
+                            result.rank === 1 ? 'bg-yellow-500' :
+                            result.rank === 2 ? 'bg-gray-400' :
+                            result.rank === 3 ? 'bg-orange-600' :
+                            'bg-gray-300 text-gray-700'
+                          }`}>
+                            {result.rank}
+                          </span>
+                          {isTied && (
+                            <span className="text-xs text-red-600 dark:text-red-400 font-semibold">
+                              (Bersama)
+                            </span>
+                          )}
+                        </div>
                       </td>
-                    ))}
-                    <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-bold text-primary-600 dark:text-primary-400">
-                      {result.total_score}
-                    </td>
-                  </tr>
-                ))}
+                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium text-gray-900 dark:text-white">{result.desa}</td>
+                      {selectedKategori === 'ALL' && KATEGORI_LIST.map(kategori => (
+                        <td key={kategori} className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center text-gray-900 dark:text-white">
+                          {result.categories[kategori] || '-'}
+                        </td>
+                      ))}
+                      <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 text-center font-bold text-primary-600 dark:text-primary-400">
+                        {result.total_score}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

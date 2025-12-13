@@ -15,6 +15,7 @@ interface JuaraUmumResult {
   totalSessions: number;
   isComplete: boolean;
   categoryScores: Record<string, Record<string, number>>;
+  rank?: number;
 }
 
 export default function JuaraUmumView({ kelas }: Props) {
@@ -162,7 +163,14 @@ export default function JuaraUmumView({ kelas }: Props) {
           return b.totalScore - a.totalScore;
         });
       
-      const finalResults = allResults;
+      // Assign rankings with tie handling
+      let currentRank = 1;
+      const finalResults = allResults.map((result, index) => {
+        if (index > 0 && allResults[index - 1].totalScore !== result.totalScore) {
+          currentRank = index + 1;
+        }
+        return { ...result, rank: currentRank };
+      });
 
       // Debug logging
       console.log('=== JUARA UMUM CALCULATION ===');
@@ -212,8 +220,9 @@ export default function JuaraUmumView({ kelas }: Props) {
               </tr>
             </thead>
             <tbody>
-              {results.map((result, index) => {
-                const isTopThree = index < 3;
+              {results.map((result) => {
+                const isTopThree = (result.rank || 0) <= 3;
+                const isTied = results.filter(r => r.rank === result.rank).length > 1;
                 
                 return (
                 <tr key={result.desa} className={
@@ -221,11 +230,20 @@ export default function JuaraUmumView({ kelas }: Props) {
                     ? (isTopThree ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-white dark:bg-gray-800')
                     : 'bg-gray-100 dark:bg-gray-700 opacity-60'
                 }>
-                  <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-bold">
-                    {index + 1}
-                    {index === 0 && ' 🥇'}
-                    {index === 1 && ' 🥈'}
-                    {index === 2 && ' 🥉'}
+                  <td className="border border-gray-300 dark:border-gray-600 px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold">
+                        {result.rank}
+                        {result.rank === 1 && ' 🥇'}
+                        {result.rank === 2 && ' 🥈'}
+                        {result.rank === 3 && ' 🥉'}
+                      </span>
+                      {isTied && (
+                        <span className="text-xs text-red-600 dark:text-red-400 font-semibold">
+                          (Bersama)
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="border border-gray-300 dark:border-gray-600 px-4 py-2 font-medium">
                     {result.desa}
