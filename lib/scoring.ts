@@ -174,6 +174,38 @@ export function getMiddle3ValuesForCriteria(scores: any[], criteriaName: string)
 }
 
 /**
+ * Get middle 3 juries with their scores for a specific criteria
+ */
+export function getMiddle3JuriesForCriteria(scores: any[], criteriaName: string): { juri: string; value: number }[] {
+  if (scores.length === 0) return [];
+  
+  const juriScores = scores.map(score => ({
+    juri: score.juri_name,
+    value: score.criteria_scores?.[criteriaName] || 0
+  })).sort((a, b) => a.value - b.value);
+  
+  if (juriScores.length < 3) {
+    return juriScores;
+  }
+  
+  if (juriScores.length === 3) {
+    return juriScores;
+  }
+  
+  if (juriScores.length === 4) {
+    return juriScores.slice(0, -1);
+  }
+  
+  const middleJuries = juriScores.slice(1, -1);
+  if (middleJuries.length > 3) {
+    const startIndex = Math.floor((middleJuries.length - 3) / 2);
+    return middleJuries.slice(startIndex, startIndex + 3);
+  }
+  
+  return middleJuries;
+}
+
+/**
  * Get tie-breaker criteria priority based on category
  */
 export function getTieBreakerPriority(kategori: string): string[] {
