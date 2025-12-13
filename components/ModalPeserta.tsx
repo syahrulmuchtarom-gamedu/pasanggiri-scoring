@@ -24,6 +24,21 @@ export default function ModalPeserta({ isOpen, onClose, undianId, desa, kategori
     if (isOpen && undianId) {
       fetchPeserta();
     }
+
+    // Prevent keyboard shortcuts when modal is open
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (isOpen && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        e.stopPropagation();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown, true);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
   }, [isOpen, undianId]);
 
   const fetchPeserta = async () => {
@@ -86,7 +101,11 @@ export default function ModalPeserta({ isOpen, onClose, undianId, desa, kategori
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={onClose}>
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" 
+      onClick={onClose}
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
