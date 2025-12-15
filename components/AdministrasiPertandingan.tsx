@@ -11,7 +11,12 @@ interface Props {
 }
 
 export default function AdministrasiPertandingan({ userRole, userId }: Props) {
-  const [activeTab, setActiveTab] = useState<'PUTRA' | 'PUTRI' | 'PESERTA'>('PUTRA');
+  const [activeTab, setActiveTab] = useState<'PUTRA' | 'PUTRI' | 'PESERTA'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('administrasi_active_tab') as 'PUTRA' | 'PUTRI' | 'PESERTA') || 'PUTRA';
+    }
+    return 'PUTRA';
+  });
   const [eventStatus, setEventStatus] = useState<any>(null);
   const [undianData, setUndianData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,6 +28,7 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
   const canEdit = isAdmin && !eventStatus?.is_locked;
 
   useEffect(() => {
+    localStorage.setItem('administrasi_active_tab', activeTab);
     fetchData();
   }, [activeTab]);
 
