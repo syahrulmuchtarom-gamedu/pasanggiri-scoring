@@ -13,7 +13,12 @@ interface Props {
 }
 
 export default function SuperAdminDashboard({ user, activeTab = 'users' }: Props) {
-  const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri' | 'juara_umum'>('putra');
+  const [competitionSubTab, setCompetitionSubTab] = useState<'putra' | 'putri' | 'juara_umum'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('competition_sub_tab') as 'putra' | 'putri' | 'juara_umum') || 'putra';
+    }
+    return 'putra';
+  });
   const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -41,6 +46,10 @@ export default function SuperAdminDashboard({ user, activeTab = 'users' }: Props
     fetchLogs();
     fetchCompetitions();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('competition_sub_tab', competitionSubTab);
+  }, [competitionSubTab]);
 
   const fetchUsers = async () => {
     try {
