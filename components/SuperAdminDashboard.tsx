@@ -19,7 +19,12 @@ export default function SuperAdminDashboard({ user, activeTab = 'users' }: Props
     }
     return 'putra';
   });
-  const [competitionView, setCompetitionView] = useState<'control' | 'results'>('control');
+  const [competitionView, setCompetitionView] = useState<'control' | 'results'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('competition_view') as 'control' | 'results') || 'control';
+    }
+    return 'control';
+  });
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [competitions, setCompetitions] = useState<any[]>([]);
@@ -50,6 +55,10 @@ export default function SuperAdminDashboard({ user, activeTab = 'users' }: Props
   useEffect(() => {
     localStorage.setItem('competition_sub_tab', competitionSubTab);
   }, [competitionSubTab]);
+
+  useEffect(() => {
+    localStorage.setItem('competition_view', competitionView);
+  }, [competitionView]);
 
   const fetchUsers = async () => {
     try {
