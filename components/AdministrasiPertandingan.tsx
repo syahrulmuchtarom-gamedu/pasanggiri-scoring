@@ -17,6 +17,12 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
     }
     return 'PUTRA';
   });
+  const [selectedKategori, setSelectedKategori] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('administrasi_kategori') || 'PERORANGAN';
+    }
+    return 'PERORANGAN';
+  });
   const [eventStatus, setEventStatus] = useState<any>(null);
   const [undianData, setUndianData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,6 +37,10 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
     localStorage.setItem('administrasi_active_tab', activeTab);
     fetchData();
   }, [activeTab]);
+
+  useEffect(() => {
+    localStorage.setItem('administrasi_kategori', selectedKategori);
+  }, [selectedKategori]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -240,15 +250,35 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
       {/* Undian List */}
       {activeTab !== 'PESERTA' && (
       <div className="space-y-6">
-        {KATEGORI_LIST.map(kategori => (
-          <div key={kategori} className="space-y-4">
-            {GOLONGAN_LIST.map(golongan => {
-              const undianList = getUndianByKategoriGolongan(kategori, golongan);
+        {/* Kategori Filter Tabs */}
+        <div className="card">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Filter Kategori:</h3>
+          <div className="flex gap-2 flex-wrap">
+            {KATEGORI_LIST.map(kategori => (
+              <button
+                key={kategori}
+                onClick={() => setSelectedKategori(kategori)}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                  selectedKategori === kategori
+                    ? 'bg-primary-600 text-white shadow-md'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                }`}
+              >
+                {kategori}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Display Selected Kategori Only */}
+        <div className="space-y-4">
+          {GOLONGAN_LIST.map(golongan => {
+              const undianList = getUndianByKategoriGolongan(selectedKategori, golongan);
               
               return (
-                <div key={`${kategori}-${golongan}`} className="card">
+                <div key={`${selectedKategori}-${golongan}`} className="card">
                   <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
-                    📋 {kategori} ({golongan})
+                    📋 {selectedKategori} ({golongan})
                   </h3>
 
                   {undianList.length === 0 ? (
@@ -291,7 +321,7 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
 
                   {canEdit && (
                     <button
-                      onClick={() => handleAddDesa(kategori, golongan)}
+                      onClick={() => handleAddDesa(selectedKategori, golongan)}
                       className="text-primary-600 dark:text-primary-400 hover:underline text-sm font-semibold"
                     >
                       + Tambah Desa
@@ -300,8 +330,7 @@ export default function AdministrasiPertandingan({ userRole, userId }: Props) {
                 </div>
               );
             })}
-          </div>
-        ))}
+        </div>
       </div>
       )}
 
